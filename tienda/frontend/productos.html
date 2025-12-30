@@ -2178,6 +2178,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       setupUIEvents();
       setupMobileMenu(); // Inicializar menú móvil
+      setupMobileFilters(); // Inicializar filtros móviles
       fetchProducts();
       loadBanner();
       loadMenuPages();
@@ -2291,6 +2292,49 @@
           mobileMenuOverlay.classList.remove("open");
           document.body.style.overflow = "";
         });
+      });
+    }
+
+    // -------------------------------
+    // PANEL DE FILTROS MÓVIL
+    // -------------------------------
+    function setupMobileFilters() {
+      const filtersButton = document.getElementById("filters-button");
+      const filtersPanel = document.getElementById("filters-panel");
+      const filtersClose = document.getElementById("filters-close");
+
+      // Verificar que los elementos existan
+      if (!filtersButton || !filtersPanel || !filtersClose) {
+        console.warn("Elementos del panel de filtros móvil no encontrados");
+        return;
+      }
+
+      // Abrir panel de filtros
+      filtersButton.addEventListener("click", () => {
+        filtersPanel.classList.add("open");
+        document.body.style.overflow = "hidden"; // Prevenir scroll
+      });
+
+      // Cerrar panel con botón X
+      filtersClose.addEventListener("click", () => {
+        filtersPanel.classList.remove("open");
+        document.body.style.overflow = ""; // Restaurar scroll
+      });
+
+      // Cerrar panel al hacer clic fuera
+      filtersPanel.addEventListener("click", (e) => {
+        if (e.target === filtersPanel) {
+          filtersPanel.classList.remove("open");
+          document.body.style.overflow = "";
+        }
+      });
+
+      // Cerrar panel con tecla Escape
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && filtersPanel.classList.contains("open")) {
+          filtersPanel.classList.remove("open");
+          document.body.style.overflow = "";
+        }
       });
     }
 
