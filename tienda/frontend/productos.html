@@ -2049,12 +2049,12 @@
         <div class="desktop-filters">
           <div class="select">
             <select id="filter-category">
-              <option value="">Categorías</option>
+              <option value="">Todas las categorías</option>
             </select>
           </div>
           <div class="select">
             <select id="filter-subcategory">
-              <option value="">Subcategorías</option>
+              <option value="">Todas las subcategorías</option>
             </select>
           </div>
           <button class="pill-filter" id="pill-disponibles" type="button">
@@ -2079,7 +2079,7 @@
         <div class="filters-content">
           <!-- Categorías -->
           <div class="filter-group">
-            <label class="filter-label" id="mobile-categories-label">Todas las categorías</label>
+            <label class="filter-label">Categorías</label>
             <div class="filter-options" id="mobile-categories">
               <!-- Se cargarán dinámicamente -->
             </div>
@@ -2661,7 +2661,7 @@
         if (p.subcategoria) subcategories.add(p.subcategoria);
       });
 
-      categorySelect.innerHTML = '<option value="">Categorías</option>';
+      categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
       categories.forEach((cat) => {
         const opt = document.createElement("option");
         opt.value = cat;
@@ -2669,7 +2669,7 @@
         categorySelect.appendChild(opt);
       });
 
-      subcategorySelect.innerHTML = '<option value="">Subcategorías</option>';
+      subcategorySelect.innerHTML = '<option value="">Todas las subcategorías</option>';
       subcategories.forEach((sub) => {
         const opt = document.createElement("option");
         opt.value = sub;
