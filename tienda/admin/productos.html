@@ -884,26 +884,59 @@
     }
 
     /* Editar */
-    function editarProducto(p) {
-      drawerTitle.textContent = "Editar producto";
-      productIdInput.value = p.id;
-      nombreInput.value = p.nombre;
-      precioInput.value = p.precio;
-      stockInput.value = p.stock;
-      enOfertaSelect.value = p.en_oferta ? "1" : "0";
-      precioOfertaInput.value = p.precio_oferta || "";
-      disponibleSelect.value = p.disponible ? "1" : "0";
+    async function editarProducto(p) {
+      // Obtener datos actualizados del producto desde la API
+      try {
+        const res = await fetch(`${API_BASE}/productos/${p.id}`);
+        if (!res.ok) {
+          throw new Error("Error al obtener datos del producto");
+        }
+        const productoActualizado = await res.json();
+        
+        drawerTitle.textContent = "Editar producto";
+        productIdInput.value = productoActualizado.id;
+        nombreInput.value = productoActualizado.nombre;
+        precioInput.value = productoActualizado.precio;
+        stockInput.value = productoActualizado.stock;
+        enOfertaSelect.value = productoActualizado.en_oferta ? "1" : "0";
+        precioOfertaInput.value = productoActualizado.precio_oferta || "";
+        disponibleSelect.value = productoActualizado.disponible ? "1" : "0";
 
-      if (p.imagen) {
-        imagenActualInput.value = p.imagen;
-        imagenPreview.src = p.imagen;
-        imagenPreview.style.display = "block";
-      } else {
-        imagenActualInput.value = "";
-        imagenPreview.style.display = "none";
+        if (productoActualizado.imagen) {
+          imagenActualInput.value = productoActualizado.imagen;
+          imagenPreview.src = productoActualizado.imagen;
+          imagenPreview.style.display = "block";
+        } else {
+          imagenActualInput.value = "";
+          imagenPreview.style.display = "none";
+        }
+
+        openDrawer();
+      } catch (err) {
+        console.error("Error al cargar producto para editar:", err);
+        showToast("Error al cargar datos del producto", "error");
+        
+        // Fallback: usar los datos del producto de la lista
+        drawerTitle.textContent = "Editar producto";
+        productIdInput.value = p.id;
+        nombreInput.value = p.nombre;
+        precioInput.value = p.precio;
+        stockInput.value = p.stock;
+        enOfertaSelect.value = p.en_oferta ? "1" : "0";
+        precioOfertaInput.value = p.precio_oferta || "";
+        disponibleSelect.value = p.disponible ? "1" : "0";
+
+        if (p.imagen) {
+          imagenActualInput.value = p.imagen;
+          imagenPreview.src = p.imagen;
+          imagenPreview.style.display = "block";
+        } else {
+          imagenActualInput.value = "";
+          imagenPreview.style.display = "none";
+        }
+
+        openDrawer();
       }
-
-      openDrawer();
     }
 
     /* Nuevo producto */
