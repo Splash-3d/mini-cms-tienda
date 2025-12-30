@@ -948,6 +948,18 @@
 
     /* Guardar */
     saveBtn.addEventListener("click", async () => {
+      // Debug: verificar elementos del DOM
+      console.log("=== DEBUG ELEMENTOS DOM ===");
+      console.log("productIdInput:", productIdInput);
+      console.log("nombreInput:", nombreInput);
+      console.log("precioInput:", precioInput);
+      console.log("stockInput:", stockInput);
+      console.log("productIdInput.value:", productIdInput.value);
+      console.log("nombreInput.value:", nombreInput.value);
+      console.log("precioInput.value:", precioInput.value);
+      console.log("stockInput.value:", stockInput.value);
+      console.log("=== FIN DEBUG DOM ===");
+
       const id = productIdInput.value;
       const nombre = nombreInput.value.trim();
       const precio = parseFloat(precioInput.value);
