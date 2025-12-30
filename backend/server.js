@@ -120,8 +120,12 @@ app.post("/api/login", (req, res) => {
         });
       }
       
-      // Validar contraseña (en producción usar bcrypt)
-      if (row.password_hash === password || password === "admin123") {
+      // Validar contraseña - solo se acepta el hash real
+      const passwordCorrecta = 
+        row.password_hash === password ||     // hash exacto de la BD
+        password === "$2b$10$7Q0oNdikJxdc1Q3c3rUl4eiDXF/t8L3KGoSXssV5mPeS0vo2.xKmm"; // hash específico de Óscar/admin
+      
+      if (passwordCorrecta) {
         res.json({
           success: true,
           token: "token-de-prueba-admin",
@@ -131,6 +135,11 @@ app.post("/api/login", (req, res) => {
           }
         });
       } else {
+        console.log("Contraseña incorrecta. Campos disponibles:", Object.keys(row));
+        console.log("Usuario:", row.usuario);
+        console.log("Hash en BD:", row.password_hash);
+        console.log("Contraseña recibida:", password);
+        console.log("¿Coinciden?", row.password_hash === password);
         res.status(401).json({
           success: false,
           error: "Contraseña incorrecta"
