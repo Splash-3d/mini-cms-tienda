@@ -3,6 +3,7 @@ const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
 const multer = require("multer");
 const fs = require("fs");
+const bcrypt = require("bcrypt");
 const app = express();
 
 // Middleware para JSON y form data
@@ -120,29 +121,34 @@ app.post("/api/login", (req, res) => {
         });
       }
       
-      // Validar contraseña - solo se acepta el hash real de la base de datos
-      const passwordCorrecta = row.password_hash === password;
-      
-      if (passwordCorrecta) {
-        res.json({
-          success: true,
-          token: "token-de-prueba-admin",
-          user: { 
-            id: row.id, 
-            username: row.usuario 
-          }
-        });
-      } else {
-        console.log("Contraseña incorrecta. Campos disponibles:", Object.keys(row));
-        console.log("Usuario:", row.usuario);
-        console.log("Hash en BD:", row.password_hash);
-        console.log("Contraseña recibida:", password);
-        console.log("¿Coinciden?", row.password_hash === password);
-        res.status(401).json({
-          success: false,
-          error: "Contraseña incorrecta"
-        });
-      }
+      // Validar contraseña usando bcrypt
+      bcrypt.compare(password, row.password_hash, (err, result) => {
+        if (err) {
+          console.error("Error al comparar contraseña:", err);
+          return res.status(500).json({
+            success: false,
+            error: "Error del servidor"
+          });
+        }
+        
+        if (result) {
+          // Login correcto
+          res.json({
+            success: true,
+            token: "token-de-prueba-admin",
+            user: { 
+              id: row.id, 
+              username: row.usuario 
+            }
+          });
+        } else {
+          // Contraseña incorrecta
+          res.status(401).json({
+            success: false,
+            error: "Credenciales incorrectas"
+          });
+        }
+      });
     }
   );
 });
