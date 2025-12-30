@@ -1,0 +1,23 @@
+NECESARIO: Integrar categorías en admin/productos.html
+
+1. ACTUALIZAR SIDEBAR (desktop y móvil):
+   - Agregar: <li><button class="sidebar-link" onclick="mostrarSeccion('categorias')">Categorías</button></li>
+   - Después de la línea de Productos y antes de Banner
+
+2. AGREGAR SECCIÓN CATEGORÍAS:
+   - Insertar el contenido de categories-section.html después de la sección de productos
+   - Antes de <!-- SECCIÓN BANNER -->
+
+3. AGREGAR JAVASCRIPT:
+   - Insertar el contenido de categories-js.js al final del script
+   - Antes del cierre del script actual
+
+4. ACTUALIZAR mostrarSeccion():
+   - Agregar caso para 'categorias':
+     if (id === "categorias") {
+       cargarCategorias();
+       cargarSubcategorias();
+     }
+
+5. ACTUALIZAR SIDEBAR MÓVIL:
+   - Agregar el mismo enlace de categorías que en el sidebar desktop

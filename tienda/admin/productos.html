@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Productos – Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: #05060b;
+      color: #f5f5f7;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Topbar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: linear-gradient(to right, #11131b, #191b25);
+      border-bottom: 1px solid #272938;
+    }
+
+    .topbar-left, .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo {
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .icon-button {
+      border: 1px solid #272938;
+      background: #11131b;
+      color: #f5f5f7;
+      padding: 0.35rem 0.6rem;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    .icon-button:hover {
+      background: rgba(79, 139, 255, 0.1);
+    }
+
+    /* Layout */
+    .layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Sidebar escritorio */
+    .sidebar {
+      width: 220px;
+      border-right: 1px solid #272938;
+      background: #0b0c13;
+      padding: 0.9rem 0.9rem 1rem;
+      display: none;
+    }
+
+    .sidebar-title {
+      font-size: 0.9rem;
+      color: #a1a3b3;
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .sidebar-link {
+      border-radius: 0.5rem;
+      padding: 0.45rem 0.55rem;
+      font-size: 0.9rem;
+      color: #c5c7d6;
+      cursor: pointer;
+    }
+
+    .sidebar-link.active,
+    .sidebar-link:hover {
+      background: rgba(79, 139, 255, 0.12);
+      color: #f5f5f7;
+    }
+
+    /* Contenido */
+    .content {
+      flex: 1;
+      padding: 1rem;
+      min-width: 0;
+    }
+
+    .page-title {
+      font-size: 1.2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-subtitle {
+      font-size: 0.85rem;
+      color: #a1a3b3;
+      margin-bottom: 1rem;
+    }
+
+    /* Header productos */
+    .products-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .products-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-primary {
+      background: #4f8bff;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #729eff;
+    }
+
+    .btn-secondary {
+      background: #11131b;
+      border: 1px solid #272938;
+      color: #f5f5f7;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(79, 139, 255, 0.12);
+    }
+
+    .search-input {
+      padding: 0.4rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid #272938;
+      background: #11131b;
+      color: #f5f5f7;
+      font-size: 0.85rem;
+      min-width: 180px;
+    }
+
+    /* Lista de productos */
+    .products-list {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .product-row {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.5rem 0.5rem;
+      border-radius: 0.7rem;
+      border: 1px solid #272938;
+      background: #11131b;
+      flex-wrap: wrap;
+    }
+
+    .product-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 0.55rem;
+      object-fit: cover;
+      background: #191b25;
+    }
+
+    .product-main {
+      flex: 2;
+      min-width: 150px;
+    }
+
+    .product-name {
+      font-size: 0.9rem;
+      margin-bottom: 0.1rem;
+    }
+
+    .product-meta {
+      font-size: 0.78rem;
+      color: #a1a3b3;
+    }
+
+    .product-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: 1px solid #272938;
+      margin-right: 0.25rem;
+    }
+
+    .pill-green { border-color: #2ecc71; color: #a8f5c7; }
+    .pill-red { border-color: #ff4b6a; color: #ff9fb1; }
+
+    .product-right {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .badge-soft {
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: #191b25;
+      color: #c5c7d6;
+    }
+
+    /* Drawer crear/editar */
+    .drawer {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: min(420px, 100%);
+      background: #05060b;
+      border-left: 1px solid #272938;
+      transform: translateX(100%);
+      transition: transform 0.2s ease-out;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header,
+    .drawer-footer {
+      padding: 0.75rem 0.9rem;
+      border-bottom: 1px solid #272938;
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drawer-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem 0.9rem;
+    }
+
+    .drawer-close {
+      border: none;
+      background: none;
+      color: #a1a3b3;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .form-group { margin-bottom: 0.75rem; }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+      color: #c5c7d6;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 0.5rem 0.6rem;
+      border-radius: 0.6rem;
+      border: 1px solid #272938;
+      background: #11131b;
+      color: #f5f5f7;
+      font-size: 0.85rem;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: #4f8bff;
+      box-shadow: 0 0 0 1px rgba(79, 139, 255, 0.4);
+    }
+
+    .form-help {
+      font-size: 0.7rem;
+      color: #8f91a5;
+      margin-top: 0.1rem;
+    }
+
+    .image-preview {
+      width: 100%;
+      max-height: 200px;
+      border-radius: 0.7rem;
+      object-fit: cover;
+      background: #191b25;
+      margin-top: 0.4rem;
+    }
+
+    /* Toasts */
+    #toast-container {
+      position: fixed;
+      top: 0.75rem;
+      right: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 60;
+    }
+
+    .toast {
+      min-width: 220px;
+      max-width: 320px;
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.7rem;
+      border: 1px solid #272938;
+      background: #11131b;
+      color: #f5f5f7;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.45rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      animation: toast-in 0.18s ease-out;
+    }
+
+    .toast-success { border-color: #2ecc71; }
+    .toast-error { border-color: #ff4b6a; }
+
+    .toast-icon { font-size: 1.1rem; margin-top: 0.05rem; }
+    .toast-message { flex: 1; }
+
+    .toast-close {
+      border: none;
+      background: none;
+      color: #a1a3b3;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(-6px) translateX(8px); }
+      to { opacity: 1; transform: translateY(0) translateX(0); }
+    }
+
+    /* Responsive */
+    @media (min-width: 900px) {
+      .sidebar { display: block; }
+      .content { padding: 1.2rem 1.5rem; }
+      .mobile-menu-button { display: none; }
+    }
+
+    /* Sidebar móvil */
+    .mobile-sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 220px;
+      background: #0b0c13;
+      border-right: 1px solid #272938;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease-out;
+      z-index: 55;
+      padding: 0.9rem 0.9rem 1rem;
+    }
+
+    .mobile-sidebar.open {
+      transform: translateX(0);
+    }
+
+    .mobile-sidebar-close {
+      border: none;
+      background: none;
+      color: #a1a3b3;
+      font-size: 1.1rem;
+      cursor: pointer;
+      position: absolute;
+      top: 0.6rem;
+      right: 0.75rem;
+    }
+
+    /* Sidebar buttons */
+    .sidebar-link {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: none;
+      background: none;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 0.85rem;
+      text-align: left;
+      border-radius: 0.5rem;
+      transition: all 0.16s ease-out;
+    }
+
+    .sidebar-link:hover {
+      background: rgba(79, 139, 255, 0.1);
+      color: #e5e7eb;
+    }
+
+    .sidebar-link.active {
+      background: rgba(79, 139, 255, 0.15);
+      color: #4f8bff;
+      font-weight: 500;
+    }
+
+    .admin-section {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="toast-container"></div>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="icon-button mobile-menu-button" id="mobile-menu-toggle">☰</button>
+      <span class="logo">Admin tienda</span>
+    </div>
+
+    <div class="topbar-right">
+      <button class="icon-button" id="logout-btn">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar escritorio -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Panel</div>
+      <ul class="sidebar-nav">
+        <li><button class="sidebar-link active" onclick="mostrarSeccion('productos')">Productos</button></li>
+        <li><button class="sidebar-link" onclick="mostrarSeccion('banner')">Banner</button></li>
+        <li><button class="sidebar-link" onclick="mostrarSeccion('paginas')">Páginas</button></li>
+      </ul>
+    </aside>
+
+    <!-- Sidebar móvil -->
+    <aside class="mobile-sidebar" id="mobile-sidebar">
+      <button class="mobile-sidebar-close" id="mobile-sidebar-close">✕</button>
+      <div class="sidebar-title" style="margin-top: 1.4rem;">Panel</div>
+      <ul class="sidebar-nav">
+        <li><button class="sidebar-link active" onclick="mostrarSeccion('productos')">Productos</button></li>
+        <li><button class="sidebar-link" onclick="mostrarSeccion('banner')">Banner</button></li>
+        <li><button class="sidebar-link" onclick="mostrarSeccion('paginas')">Páginas</button></li>
+      </ul>
+    </aside>
+
+    <!-- Contenido -->
+    <main class="content">
+      <!-- SECCIÓN PRODUCTOS -->
+      <section id="seccion-productos" class="admin-section">
+        <h1 class="page-title">Productos</h1>
+        <p class="page-subtitle">Gestiona los productos de la tienda en tiempo real.</p>
+
+        <div class="products-header">
+          <div class="products-actions">
+            <button class="btn-primary" id="new-product-btn">Nuevo producto</button>
+            <button class="btn-secondary" id="reload-btn">Recargar</button>
+          </div>
+
+          <div class="products-actions">
+            <input type="text" class="search-input" id="search-input" placeholder="Buscar productos..." />
+          </div>
+        </div>
+
+        <div class="products-list" id="products-list">
+          <!-- Se rellena por JS -->
+        </div>
+      </section>
+
+      <!-- SECCIÓN BANNER -->
+      <section id="seccion-banner" class="admin-section" style="display:none;">
+        <h1 class="page-title">Banner</h1>
+        <p class="page-subtitle">Configura el banner visible en la tienda.</p>
+
+        <div class="products-header" style="margin-top: 1.5rem;">
+          <div class="products-actions">
+            <button class="btn-primary" id="guardar-banner">Guardar banner</button>
+            <button class="btn-secondary" id="recargar-banner">Recargar</button>
+          </div>
+        </div>
+
+        <form id="banner-form" style="margin-top: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label" for="banner-texto">Texto del banner</label>
+            <input class="form-input" type="text" id="banner-texto" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="banner-color-fondo">Color de fondo</label>
+            <input class="form-input" type="color" id="banner-color-fondo" value="#1d4ed8" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="banner-color-texto">Color del texto</label>
+            <input class="form-input" type="color" id="banner-color-texto" value="#ffffff" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="banner-visible">Visible</label>
+            <select class="form-input" id="banner-visible" style="width: 150px;">
+              <option value="1">Sí</option>
+              <option value="0">No</option>
+            </select>
+          </div>
+        </form>
+      </section>
+
+      <!-- SECCIÓN PÁGINAS -->
+      <section id="seccion-paginas" class="admin-section" style="display:none;">
+        <h1 class="page-title">Páginas personalizables</h1>
+        <p class="page-subtitle">Crea y edita las páginas del sitio web.</p>
+
+        <div class="products-header" style="margin-top: 1.5rem;">
+          <div class="products-actions">
+            <button class="btn-primary" id="nueva-pagina">Nueva página</button>
+            <button class="btn-secondary" id="recargar-paginas">Recargar páginas</button>
+          </div>
+        </div>
+
+        <!-- Formulario para crear/editar página -->
+        <div id="form-pagina" style="display:none; margin-top:1.5rem;">
+          <h3 id="form-pagina-titulo" style="color: #e5e7eb; margin-bottom: 1rem;">Crear página</h3>
+          
+          <form id="pagina-form-element">
+            <div class="form-group">
+              <label class="form-label" for="pagina-slug">Slug (URL)</label>
+              <input class="form-input" type="text" id="pagina-slug" placeholder="sobre-nosotros" />
+              <p class="form-help">URL amigable para la página. Solo letras minúsculas, números y guiones.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pagina-titulo">Título</label>
+              <input class="form-input" type="text" id="pagina-titulo" placeholder="Sobre nosotros" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pagina-contenido">Contenido (HTML)</label>
+              <textarea class="form-input" id="pagina-contenido" rows="6" 
+                        style="font-family: monospace; resize: vertical;"
+                        placeholder="Escribe el contenido HTML aquí..."></textarea>
+              <p class="form-help">Puedes usar HTML para formatear el contenido.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pagina-visible">Visible</label>
+              <select class="form-select" id="pagina-visible" style="width: 150px;">
+                <option value="1">Sí</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+
+            <div class="products-actions" style="margin-top: 1rem;">
+              <button type="submit" class="btn-primary" id="guardar-pagina">Guardar</button>
+              <button type="button" class="btn-secondary" id="cancelar-pagina">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Listado de páginas -->
+        <div style="margin-top: 2rem;">
+          <h3 style="color: #e5e7eb; margin-bottom: 1rem;">Listado de páginas</h3>
+          <div id="lista-paginas"></div>
+        </div>
+
+        <!-- Gestión de bloques -->
+        <div id="bloques-container" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #272938;">
+          <h3 style="color: #e5e7eb; margin-bottom: 1rem;">Bloques de contenido</h3>
+          <div id="bloques-lista" style="margin-bottom: 1rem;"></div>
+          
+          <div class="products-actions">
+            <button class="btn-primary" id="agregar-texto">Añadir texto</button>
+            <button class="btn-primary" id="agregar-imagen">Añadir imagen</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Drawer crear/editar -->
+  <aside class="drawer" id="product-drawer">
+    <div class="drawer-header">
+      <h2 id="drawer-title">Nuevo producto</h2>
+      <button class="drawer-close" id="drawer-close">✕</button>
+    </div>
+
+    <div class="drawer-content">
+      <form id="product-form">
+        <input type="hidden" id="product-id" />
+        <input type="hidden" id="imagen-actual" />
+
+        <div class="form-group">
+          <label class="form-label" for="nombre">Nombre</label>
+          <input class="form-input" type="text" id="nombre" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="precio">Precio (€)</label>
+          <input class="form-input" type="number" step="0.01" min="0" id="precio" required />
+          <p class="form-help">Debe ser mayor que 0.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="stock">Stock</label>
+          <input class="form-input" type="number" step="1" min="0" id="stock" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="en_oferta">En oferta</label>
+          <select class="form-select" id="en_oferta">
+            <option value="0">No</option>
+            <option value="1">Sí</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="precio_oferta">Precio de oferta (€)</label>
+          <input class="form-input" type="number" step="0.01" min="0" id="precio_oferta" />
+          <p class="form-help">Solo si el producto está en oferta.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="disponible">Disponibilidad</label>
+          <select class="form-select" id="disponible">
+            <option value="1">Disponible</option>
+            <option value="0">Oculto</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="imagen">Imagen</label>
+          <input class="form-input" type="file" id="imagen" accept="image/*" />
+          <p class="form-help">Si no eliges imagen, se mantiene la actual.</p>
+          <img id="imagen-preview" class="image-preview" style="display:none;" />
+        </div>
+      </form>
+    </div>
+
+    <div class="drawer-footer">
+      <button class="btn-secondary" id="cancel-btn">Cancelar</button>
+      <button class="btn-primary" id="save-btn">Guardar</button>
+    </div>
+  </aside>
+
+  <script>
+    const API_BASE = "/api";
+    const token = localStorage.getItem("admin_token");
+
+    /* Toasts */
+    const toastContainer = document.getElementById("toast-container");
+
+    function showToast(message, type = "success", duration = 3000) {
+      const toast = document.createElement("div");
+      toast.className = "toast " + (type === "error" ? "toast-error" : "toast-success");
+
+      const icon = document.createElement("div");
+      icon.className = "toast-icon";
+      icon.textContent = type === "error" ? "⚠" : "✔";
+
+      const msg = document.createElement("div");
+      msg.className = "toast-message";      msg.textContent = message;
+
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "toast-close";
+      closeBtn.textContent = "✕";
+      closeBtn.addEventListener("click", () => {
+        toastContainer.removeChild(toast);
+      });
+
+      toast.appendChild(icon);
+      toast.appendChild(msg);
+      toast.appendChild(closeBtn);
+
+      toastContainer.appendChild(toast);
+
+      setTimeout(() => {
+        if (toast.parentElement === toastContainer) {
+          toastContainer.removeChild(toast);
+        }
+      }, duration);
+    }
+
+    /* Redirigir si no hay token */
+    if (!token) {
+      window.location.href = "login.html";
+    }
+
+    /* Referencias */
+    const productsList = document.getElementById("products-list");
+    const searchInput = document.getElementById("search-input");
+    const reloadBtn = document.getElementById("reload-btn");
+    const newProductBtn = document.getElementById("new-product-btn");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    const drawer = document.getElementById("product-drawer");
+    const drawerTitle = document.getElementById("drawer-title");
+    const drawerClose = document.getElementById("drawer-close");
+    const cancelBtn = document.getElementById("cancel-btn");
+    const saveBtn = document.getElementById("save-btn");
+
+    const productForm = document.getElementById("product-form");
+    const productIdInput = document.getElementById("product-id");
+    const imagenActualInput = document.getElementById("imagen-actual");
+    const nombreInput = document.getElementById("nombre");
+    const precioInput = document.getElementById("precio");
+    const stockInput = document.getElementById("stock");
+    const enOfertaSelect = document.getElementById("en_oferta");
+    const precioOfertaInput = document.getElementById("precio_oferta");
+    const disponibleSelect = document.getElementById("disponible");
+    const imagenInput = document.getElementById("imagen");
+    const imagenPreview = document.getElementById("imagen-preview");
+
+    let productos = [];
+
+    /* Drawer */
+    function openDrawer() {
+      drawer.classList.add("open");
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove("open");
+      productForm.reset();
+      productIdInput.value = "";
+      imagenActualInput.value = "";
+      imagenPreview.style.display = "none";
+      imagenPreview.src = "";
+    }
+
+    drawerClose.addEventListener("click", closeDrawer);
+    cancelBtn.addEventListener("click", closeDrawer);
+
+    imagenInput.addEventListener("change", () => {
+      const file = imagenInput.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        imagenPreview.src = url;
+        imagenPreview.style.display = "block";
+      } else {
+        imagenPreview.style.display = "none";
+      }
+    });
+
+    /* Cargar productos */
+    async function cargarProductos() {
+      productsList.innerHTML = "<p style='color:#a1a3b3;font-size:0.85rem;'>Cargando productos...</p>";
+
+      try {
+        const res = await fetch(API_BASE + "/productos");
+        const data = await res.json();
+
+        if (!Array.isArray(data)) {
+          productsList.innerHTML = "<p style='color:#ff9fb1;font-size:0.85rem;'>Error al cargar productos.</p>";
+          return;
+        }
+
+        productos = data;
+        renderProductos();
+
+      } catch (err) {
+        productsList.innerHTML = "<p style='color:#ff9fb1;font-size:0.85rem;'>Error de conexión.</p>";
+      }
+    }
+
+    /* Render productos */
+    function renderProductos() {
+      const q = (searchInput.value || "").toLowerCase();
+      const filtrados = productos.filter(p =>
+        p.nombre.toLowerCase().includes(q)
+      );
+
+      if (filtrados.length === 0) {
+        productsList.innerHTML = "<p style='color:#a1a3b3;font-size:0.85rem;'>No hay productos.</p>";
+        return;
+      }
+
+      productsList.innerHTML = "";
+
+      filtrados.forEach(p => {
+        const row = document.createElement("div");
+        row.className = "product-row";
+
+        const img = document.createElement("img");
+        img.className = "product-thumb";
+        img.src = p.imagen || "https://via.placeholder.com/80x80?text=?";
+
+        const main = document.createElement("div");
+        main.className = "product-main";
+
+        const nameEl = document.createElement("div");
+        nameEl.className = "product-name";
+        nameEl.textContent = p.nombre;
+
+        const meta = document.createElement("div");
+        meta.className = "product-meta";
+
+        const precioSpan = document.createElement("span");
+        precioSpan.textContent = (p.precio || 0).toFixed(2).replace(".", ",") + " €";
+
+        const stockSpan = document.createElement("span");
+        stockSpan.textContent = " · Stock: " + (p.stock ?? 0);
+
+        const pill = document.createElement("span");
+        pill.className = "product-pill " + (p.disponible ? "pill-green" : "pill-red");
+        pill.textContent = p.disponible ? "Visible" : "Oculto";
+
+        meta.appendChild(precioSpan);
+        meta.appendChild(stockSpan);
+        meta.appendChild(document.createTextNode(" "));
+        meta.appendChild(pill);
+
+        main.appendChild(nameEl);
+        main.appendChild(meta);
+
+        const right = document.createElement("div");
+        right.className = "product-right";
+
+        const idBadge = document.createElement("span");
+        idBadge.className = "badge-soft";
+        idBadge.textContent = "ID " + p.id;
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "btn-secondary";
+        editBtn.textContent = "Editar";
+        editBtn.addEventListener("click", () => editarProducto(p));
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn-secondary";
+        deleteBtn.style.borderColor = "#ff4b6a";
+        deleteBtn.style.color = "#ff9fb1";
+        deleteBtn.textContent = "Borrar";
+        deleteBtn.addEventListener("click", () => borrarProducto(p.id));
+
+        right.appendChild(idBadge);
+        right.appendChild(editBtn);
+        right.appendChild(deleteBtn);
+
+        row.appendChild(img);
+        row.appendChild(main);
+        row.appendChild(right);
+
+        productsList.appendChild(row);
+      });
+    }
+
+    /* Editar */
+    function editarProducto(p) {
+      drawerTitle.textContent = "Editar producto";
+      productIdInput.value = p.id;
+      nombreInput.value = p.nombre;
+      precioInput.value = p.precio;
+      stockInput.value = p.stock;
+      enOfertaSelect.value = p.en_oferta ? "1" : "0";
+      precioOfertaInput.value = p.precio_oferta || "";
+      disponibleSelect.value = p.disponible ? "1" : "0";
+
+      if (p.imagen) {
+        imagenActualInput.value = p.imagen;
+        imagenPreview.src = p.imagen;
+        imagenPreview.style.display = "block";
+      } else {
+        imagenActualInput.value = "";
+        imagenPreview.style.display = "none";
+      }
+
+      openDrawer();
+    }
+
+    /* Nuevo producto */
+    newProductBtn.addEventListener("click", () => {
+      drawerTitle.textContent = "Nuevo producto";
+      closeDrawer();
+      openDrawer();
+    });
+
+    /* Recargar */
+    reloadBtn.addEventListener("click", () => {
+      cargarProductos();
+      showToast("Productos recargados", "success");
+    });
+
+    /* Buscar */
+    searchInput.addEventListener("input", () => {
+      renderProductos();
+    });
+
+    /* Guardar */
+    saveBtn.addEventListener("click", async () => {
+      const id = productIdInput.value;
+      const nombre = nombreInput.value.trim();
+      const precio = parseFloat(precioInput.value);
+      const stock = parseInt(stockInput.value, 10);
+      const disponible = disponibleSelect.value;
+      const en_oferta = enOfertaSelect.value;
+      const precio_oferta = precioOfertaInput.value || null;
+
+      if (!nombre || !isFinite(precio) || precio <= 0 || !Number.isInteger(stock) || stock < 0) {
+        showToast("Revisa nombre, precio y stock", "error");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("nombre", nombre);
+      formData.append("precio", String(precio));
+      formData.append("stock", String(stock));
+      formData.append("disponible", disponible);
+      formData.append("en_oferta", en_oferta);
+      if (precio_oferta) {
+        formData.append("precio_oferta", precio_oferta);
+      }
+      formData.append("imagenActual", imagenActualInput.value || "");
+
+      if (imagenInput.files[0]) {
+        formData.append("imagen", imagenInput.files[0]);
+      }
+
+      const url = id ? API_BASE + "/productos/" + id : API_BASE + "/productos";
+      const method = id ? "PUT" : "POST";
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { Authorization: "Bearer " + token },
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || "Error al guardar", "error");
+          return;
+        }
+
+        showToast(id ? "Producto actualizado" : "Producto creado", "success");
+        closeDrawer();
+        cargarProductos();
+
+      } catch (err) {
+        showToast("Error de conexión al guardar", "error");
+      }
+    });
+
+    /* Borrar */
+    async function borrarProducto(id) {
+      if (!confirm("¿Seguro que quieres borrar este producto?")) return;
+
+      try {
+        const res = await fetch(API_BASE + "/productos/" + id, {
+          method: "DELETE",
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || "Error al borrar", "error");
+          return;
+        }
+
+        showToast("Producto borrado", "success");
+        cargarProductos();
+
+      } catch (err) {
+        showToast("Error de conexión al borrar", "error");
+      }
+    }
+
+    /* Logout */
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("admin_token");
+      showToast("Sesión cerrada", "success");
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 700);
+    });
+
+    /* Sidebar móvil */
+    const mobileMenuToggle = document.getElementById("mobile-menu-toggle");
+    const mobileSidebar = document.getElementById("mobile-sidebar");
+    const mobileSidebarClose = document.getElementById("mobile-sidebar-close");
+
+    mobileMenuToggle.addEventListener("click", () => {
+      mobileSidebar.classList.add("open");
+    });
+
+    mobileSidebarClose.addEventListener("click", () => {
+      mobileSidebar.classList.remove("open");
+    });
+
+    // -------------------------------
+    // FUNCIONALIDAD DE SECCIONES
+    // -------------------------------
+    function mostrarSeccion(id) {
+      // Ocultar todas las secciones
+      document.querySelectorAll(".admin-section").forEach(sec => {
+        sec.style.display = "none";
+      });
+
+      // Mostrar la sección seleccionada
+      const seccion = document.getElementById("seccion-" + id);
+      if (seccion) {
+        seccion.style.display = "block";
+      }
+
+      // Actualizar estado activo en botones
+      document.querySelectorAll(".sidebar-link").forEach(btn => {
+        btn.classList.remove("active");
+      });
+
+      // Activar botones correspondientes (desktop y móvil)
+      document.querySelectorAll(`.sidebar-link[onclick="mostrarSeccion('${id}')"]`).forEach(btn => {
+        btn.classList.add("active");
+      });
+
+      // Cerrar sidebar móvil si está abierto
+      mobileSidebar.classList.remove("open");
+
+      // Cargar datos específicos de la sección
+      if (id === "banner") {
+        cargarBanner();
+      } else if (id === "paginas") {
+        // Las páginas ya se cargan al iniciar
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        drawer.classList.remove("open");
+        mobileSidebar.classList.remove("open");
+      }
+    });
+
+    /* Cargar al entrar */
+    cargarProductos();
+
+    // -------------------------------
+    // FUNCIONALIDAD DE BANNER
+    // -------------------------------
+    const bannerForm = document.getElementById("banner-form");
+    const bannerTextoInput = document.getElementById("banner-texto");
+    const bannerColorFondoInput = document.getElementById("banner-color-fondo");
+    const bannerColorTextoInput = document.getElementById("banner-color-texto");
+    const bannerVisibleSelect = document.getElementById("banner-visible");
+    const guardarBannerBtn = document.getElementById("guardar-banner");
+    const recargarBannerBtn = document.getElementById("recargar-banner");
+
+    // Cargar banner
+    async function cargarBanner() {
+      try {
+        const res = await fetch(API_BASE + "/banner");
+        const banner = await res.json();
+
+        if (!banner) {
+          showToast("Error al cargar banner", "error");
+          return;
+        }
+
+        bannerTextoInput.value = banner.texto || "";
+        bannerColorFondoInput.value = banner.color_fondo || "#1d4ed8";
+        bannerColorTextoInput.value = banner.color_texto || "#ffffff";
+        bannerVisibleSelect.value = banner.visible ? "1" : "0";
+
+      } catch (err) {
+        showToast("Error de conexión al cargar banner", "error");
+      }
+    }
+
+    // Guardar banner
+    async function guardarBanner() {
+      const texto = bannerTextoInput.value.trim();
+      const color_fondo = bannerColorFondoInput.value;
+      const color_texto = bannerColorTextoInput.value;
+      const visible = bannerVisibleSelect.value;
+
+      if (!texto) {
+        showToast("El texto del banner es obligatorio", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch(API_BASE + "/banner", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+          },
+          body: JSON.stringify({ texto, color_fondo, color_texto, visible })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || "Error al guardar banner", "error");
+          return;
+        }
+
+        showToast("Banner actualizado", "success");
+
+      } catch (err) {
+        showToast("Error de conexión al guardar banner", "error");
+      }
+    }
+
+    // Event listeners
+    guardarBannerBtn.addEventListener("click", guardarBanner);
+    recargarBannerBtn.addEventListener("click", cargarBanner);
+    bannerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      guardarBanner();
+    });
+  </script>
+
+  <!-- Scripts para gestión de páginas -->
+  <script src="panel.js"></script>
+  <script src="blocks-management.js"></script>
+</body>
+</html>

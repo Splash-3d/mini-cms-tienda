@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login admin – Mini CMS tienda</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #1a1b27, #05060b);
+      color: #f5f5f7;
+      padding: 1rem;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 380px;
+      background: rgba(5, 6, 11, 0.92);
+      border-radius: 1rem;
+      padding: 1.5rem 1.75rem;
+      border: 1px solid #272938;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .login-title {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-subtitle {
+      font-size: 0.9rem;
+      color: #a1a3b3;
+      margin-bottom: 1.4rem;
+    }
+
+    .form-group { margin-bottom: 1rem; }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+      color: #c5c7d6;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.6rem;
+      border: 1px solid #272938;
+      background: #11131b;
+      color: #f5f5f7;
+      font-size: 0.9rem;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #4f8bff;
+      box-shadow: 0 0 0 1px rgba(79, 139, 255, 0.4);
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 0.65rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #4f8bff;
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-top: 0.5rem;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .login-button:hover {
+      transform: translateY(-1px);
+      background: #729eff;
+    }
+
+    .login-footer {
+      margin-top: 1.1rem;
+      font-size: 0.8rem;
+      color: #8f91a5;
+      text-align: center;
+    }
+
+    /* Toasts */
+    #toast-container {
+      position: fixed;
+      top: 0.75rem;
+      right: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 999;
+    }
+
+    .toast {
+      min-width: 220px;
+      max-width: 320px;
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.7rem;
+      border: 1px solid #272938;
+      background: #11131b;
+      color: #f5f5f7;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.45rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      animation: toast-in 0.18s ease-out;
+    }
+
+    .toast-success { border-color: #2ecc71; }
+    .toast-error { border-color: #ff4b6a; }
+
+    .toast-icon { font-size: 1.1rem; margin-top: 0.05rem; }
+    .toast-message { flex: 1; }
+
+    .toast-close {
+      border: none;
+      background: none;
+      color: #a1a3b3;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(-6px) translateX(8px); }
+      to { opacity: 1; transform: translateY(0) translateX(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="toast-container"></div>
+
+  <div class="login-card">
+    <h1 class="login-title">Panel de administración</h1>
+    <p class="login-subtitle">Inicia sesión para gestionar la tienda.</p>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label class="form-label" for="username">Usuario</label>
+        <input class="form-input" type="text" id="username" required />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Contraseña</label>
+        <input class="form-input" type="password" id="password" required />
+      </div>
+
+      <button type="submit" class="login-button">Entrar</button>
+    </form>
+  </div>
+
+  <script>
+    const toastContainer = document.getElementById("toast-container");
+
+    function showToast(message, type = "success", duration = 3000) {
+      const toast = document.createElement("div");
+      toast.className = "toast " + (type === "error" ? "toast-error" : "toast-success");
+
+      const icon = document.createElement("div");
+      icon.className = "toast-icon";
+      icon.textContent = type === "error" ? "⚠" : "✔";
+
+      const msg = document.createElement("div");
+      msg.className = "toast-message";
+      msg.textContent = message;
+
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "toast-close";
+      closeBtn.textContent = "✕";
+      closeBtn.onclick = () => toast.remove();
+
+      toast.append(icon, msg, closeBtn);
+      toastContainer.appendChild(toast);
+
+      setTimeout(() => toast.remove(), duration);
+    }
+
+    const form = document.getElementById("login-form");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !password) {
+        showToast("Rellena todos los campos", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || "Error al iniciar sesión", "error");
+          return;
+        }
+
+        localStorage.setItem("admin_token", data.token);
+        showToast("Login correcto, entrando…", "success");
+
+        setTimeout(() => {
+          window.location.href = "productos.html";
+        }, 800);
+
+      } catch {
+        showToast("Error de conexión con el servidor", "error");
+      }
+    });
+  </script>
+</body>
+</html>

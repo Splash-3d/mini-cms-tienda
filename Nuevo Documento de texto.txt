@@ -1,0 +1,11 @@
+cd C:\Users\crist\Desktop\mini-cms-tienda\backend
+node server.js
+
+
+
+http://localhost:3000/tienda/admin/productos.html
+
+
+http://localhost:3000/tienda/frontend/productos.html
+
+

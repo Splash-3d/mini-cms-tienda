@@ -1,0 +1,98 @@
+<!-- SECCIÓN CATEGORÍAS -->
+      <section id="seccion-categorias" class="admin-section" style="display:none;">
+        <h1 class="page-title">Categorías y Subcategorías</h1>
+        <p class="page-subtitle">Gestiona las categorías y subcategorías de la tienda.</p>
+
+        <div class="products-header" style="margin-top: 1.5rem;">
+          <div class="products-actions">
+            <button class="btn-primary" id="nueva-categoria-btn">Nueva categoría</button>
+            <button class="btn-primary" id="nueva-subcategoria-btn">Nueva subcategoría</button>
+            <button class="btn-secondary" id="recargar-categorias">Recargar</button>
+          </div>
+        </div>
+
+        <!-- Lista de categorías -->
+        <div style="margin-top: 2rem;">
+          <h3 style="color: #e5e7eb; margin-bottom: 1rem;">Categorías</h3>
+          <div id="categorias-list" style="display: grid; gap: 1rem;">
+            <!-- Se rellena por JS -->
+          </div>
+        </div>
+
+        <!-- Lista de subcategorías -->
+        <div style="margin-top: 2rem;">
+          <h3 style="color: #e5e7eb; margin-bottom: 1rem;">Subcategorías</h3>
+          <div id="subcategorias-list" style="display: grid; gap: 1rem;">
+            <!-- Se rellena por JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Formulario categoría -->
+      <aside class="drawer" id="categoria-drawer">
+        <div class="drawer-header">
+          <h2 id="categoria-drawer-title">Nueva categoría</h2>
+          <button class="drawer-close" id="categoria-drawer-close">✕</button>
+        </div>
+
+        <div class="drawer-content">
+          <form id="categoria-form">
+            <div class="form-group">
+              <label class="form-label" for="categoria-nombre">Nombre</label>
+              <input class="form-input" type="text" id="categoria-nombre" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="categoria-visible">Visible</label>
+              <select class="form-select" id="categoria-visible" style="width: 150px;">
+                <option value="1">Sí</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <div class="drawer-footer">
+          <button class="btn-secondary" id="categoria-cancel-btn">Cancelar</button>
+          <button class="btn-primary" id="categoria-save-btn">Guardar</button>
+        </div>
+      </aside>
+
+      <!-- Formulario subcategoría -->
+      <aside class="drawer" id="subcategoria-drawer">
+        <div class="drawer-header">
+          <h2 id="subcategoria-drawer-title">Nueva subcategoría</h2>
+          <button class="drawer-close" id="subcategoria-drawer-close">✕</button>
+        </div>
+
+        <div class="drawer-content">
+          <form id="subcategoria-form">
+            <input type="hidden" id="subcategoria-id" />
+            
+            <div class="form-group">
+              <label class="form-label" for="subcategoria-categoria">Categoría</label>
+              <select class="form-select" id="subcategoria-categoria" required>
+                <option value="">Selecciona una categoría...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="subcategoria-nombre">Nombre</label>
+              <input class="form-input" type="text" id="subcategoria-nombre" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="subcategoria-visible">Visible</label>
+              <select class="form-select" id="subcategoria-visible" style="width: 150px;">
+                <option value="1">Sí</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <div class="drawer-footer">
+          <button class="btn-secondary" id="subcategoria-cancel-btn">Cancelar</button>
+          <button class="btn-primary" id="subcategoria-save-btn">Guardar</button>
+        </div>
+      </aside>

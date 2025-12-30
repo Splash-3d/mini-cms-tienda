@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Página</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* -------------------------
+       RESET BÁSICO
+    -------------------------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-main: #020617;
+      --bg-elevated: rgba(15, 23, 42, 0.85);
+      --bg-elevated-solid: #0f172a;
+      --bg-soft: #020617;
+      --accent: #f97316;
+      --accent-soft: rgba(249, 115, 22, 0.14);
+      --accent-strong: #fb923c;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(148, 163, 184, 0.35);
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.65);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-full: 999px;
+      --blur-glass: 14px;
+      --transition-fast: 0.16s ease-out;
+      --transition-med: 0.22s ease-out;
+      --header-height: 64px;
+      --max-width: 1200px;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #020617, #020617 40%, #020617);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* -------------------------
+       LAYOUT GENERAL
+    -------------------------- */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header.site-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(
+        to bottom,
+        rgba(15, 23, 42, 0.95),
+        rgba(15, 23, 42, 0.78),
+        transparent
+      );
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 30% 0, #f97316, #1d4ed8 55%, #020617);
+      box-shadow: 0 10px 30px rgba(248, 113, 22, 0.65);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 1.2rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-main);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: background var(--transition-fast), border-color var(--transition-fast),
+        transform var(--transition-fast), box-shadow var(--transition-fast);
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      background: rgba(15, 23, 42, 1);
+      border-color: rgba(248, 250, 252, 0.2);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.75);
+    }
+
+    /* -------------------------
+       BANNER
+    -------------------------- */
+    .banner {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 500;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* -------------------------
+       MAIN CONTENT
+    -------------------------- */
+    main.site-main {
+      flex: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.6rem 1.5rem 2.5rem;
+    }
+
+    .pagina-contenido {
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 18px;
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      padding: 2rem;
+      backdrop-filter: blur(14px);
+    }
+
+    .pagina-titulo {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text-main);
+    }
+
+    .pagina-texto {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-main);
+    }
+
+    .pagina-texto h1, .pagina-texto h2, .pagina-texto h3 {
+      margin-top: 1.5rem;
+      margin-bottom: 0.8rem;
+      color: var(--text-main);
+    }
+
+    .pagina-texto p {
+      margin-bottom: 1rem;
+    }
+
+    .pagina-texto ul, .pagina-texto ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .pagina-texto a {
+      color: #f97316;
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .pagina-texto a:hover {
+      color: #fb923c;
+      text-decoration: underline;
+    }
+
+    /* -------------------------
+       FOOTER
+    -------------------------- */
+    footer.site-footer {
+      border-top: 1px solid rgba(31, 41, 55, 0.95);
+      padding: 0.9rem 1.5rem 1rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), #020617);
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-link {
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .footer-link:hover {
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    /* -------------------------
+       RESPONSIVE
+    -------------------------- */
+    @media (max-width: 640px) {
+      .header-inner {
+        padding-inline: 1rem;
+      }
+      main.site-main {
+        padding-inline: 1rem;
+      }
+      .pagina-contenido {
+        padding: 1.5rem;
+      }
+      .pagina-titulo {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* -------------------------
+       RESPONSIVE DESIGN - EVITAR SOLAPAMIENTOS EN PÁGINAS
+    -------------------------- */
+    @media (max-width: 768px) {
+      .pagina-contenido {
+        padding: 1rem;
+        width: 100%;
+        overflow-wrap: break-word;
+      }
+
+      .pagina-contenido img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .pagina-contenido table {
+        width: 100%;
+        overflow-x: auto;
+        display: block;
+      }
+
+      .pagina-contenido blockquote {
+        margin: 1rem 0;
+        padding: 0.8rem;
+        border-left: 3px solid var(--accent);
+        background: rgba(249, 115, 22, 0.1);
+      }
+
+      .pagina-contenido ul, .pagina-contenido ol {
+        padding-left: 1.5rem;
+      }
+
+      .pagina-contenido li {
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+      }
+
+      #banner {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.7rem;
+        text-align: center;
+        line-height: 1.3;
+        word-break: break-word;
+      }
+
+      .site-header {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        gap: 0.6rem;
+      }
+
+      .site-nav {
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 0.4rem;
+      }
+
+      .menu-paginas {
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 0.4rem;
+      }
+
+      .menu-paginas a {
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-logo"></div>
+          <div class="brand-text">
+            <div class="brand-title">Mini CMS Tienda</div>
+            <div class="brand-sub">Catálogo público de productos</div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <a href="/tienda/productos.html" class="back-button">
+            <span>←</span>
+            <span>Volver a productos</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <div id="banner" class="banner" style="display:none;">
+      <span id="banner-text"></span>
+    </div>
+
+    <!-- MAIN -->
+    <main class="site-main">
+      <section class="pagina-hero">
+        <h1 class="pagina-titulo" id="pagina-titulo">Cargando...</h1>
+      </section>
+
+      <section class="pagina-contenido">
+        <div id="contenido-pagina"></div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>Mini CMS Tienda · Frontend público</div>
+        <div class="footer-links">
+          <span class="footer-link">Términos</span>
+          <span class="footer-link">Privacidad</span>
+          <span class="footer-link">Contacto</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // -------------------------------
+    // BANNER
+    // -------------------------------
+    async function loadBanner() {
+      try {
+        const res = await fetch("/api/banner");
+        const banner = await res.json();
+
+        const bannerEl = document.getElementById("banner");
+        const bannerText = document.getElementById("banner-text");
+
+        if (!banner.visible) {
+          bannerEl.style.display = "none";
+          return;
+        }
+
+        bannerEl.style.display = "block";
+        bannerEl.style.background = banner.color_fondo;
+        bannerEl.style.color = banner.color_texto;
+        bannerText.textContent = banner.texto;
+
+      } catch (err) {
+        console.error("Error cargando banner:", err);
+      }
+    }
+
+    // -------------------------------
+    // PÁGINA CON BLOQUES
+    // -------------------------------// Cargar página con contenido tradicional y bloques
+    async function loadPage() {
+      console.log("Iniciando carga de página...");
+      const slug = new URLSearchParams(window.location.search).get("p");
+      console.log("Slug solicitado:", slug);
+      
+      if (!slug) {
+        document.getElementById("pagina-titulo").textContent = "Página no encontrada";
+        document.getElementById("contenido-pagina").innerHTML = "<p>No se especificó una página.</p>";
+        
+        // Actualizar título de la página
+        document.title = "Página no encontrada | Mini CMS Tienda";
+
+        return;
+      }
+
+      try {
+        // Cargar información básica de la página
+        console.log("Cargando página desde API:", `/api/paginas/${slug}`);
+        const res = await fetch("/api/paginas/" + slug);
+        if (!res.ok) {
+          throw new Error("Página no encontrada");
+        }
+        const pagina = await res.json();
+        console.log("Página cargada:", pagina);
+
+        document.getElementById("pagina-titulo").textContent = pagina.titulo;
+        
+        // Actualizar título de la página
+        document.title = pagina.titulo + " | Mini CMS Tienda";
+
+        // Cargar bloques de la página
+        await loadBloques(slug, pagina);
+
+      } catch (err) {
+        console.error("Error cargando página:", err);
+        document.getElementById("pagina-titulo").textContent = "Página no encontrada";
+        document.getElementById("contenido-pagina").innerHTML = "<p>La página solicitada no existe o no está disponible.</p>";
+      }
+    }
+
+    // Cargar bloques de la página con fallback a contenido tradicional
+    async function loadBloques(slug, pagina = null) {
+      console.log("Cargando bloques para página:", slug);
+      try {
+        const res = await fetch(`/api/paginas/${slug}/bloques`);
+        const bloques = await res.json();
+        console.log("Bloques recibidos:", bloques);
+
+        const cont = document.getElementById("contenido-pagina");
+        cont.innerHTML = "";
+
+        // Si hay bloques, mostrarlos
+        if (Array.isArray(bloques) && bloques.length > 0) {
+          console.log("Mostrando bloques:", bloques.length, "bloques encontrados");
+          // Mostrar bloques en orden
+          bloques.forEach(bloque => {
+            if (bloque.tipo === "texto") {
+              const div = document.createElement("div");
+              div.className = "bloque-texto";
+              div.innerHTML = bloque.contenido;
+              div.style.cssText = `
+                margin-bottom: 1.5rem;
+                line-height: 1.7;
+                color: var(--text-main);
+              `;
+              cont.appendChild(div);
+            }
+
+            if (bloque.tipo === "imagen") {
+              const div = document.createElement("div");
+              div.className = "bloque-imagen";
+              div.style.cssText = `
+                margin-bottom: 1.5rem;
+                text-align: center;
+              `;
+              
+              const img = document.createElement("img");
+              img.src = bloque.contenido;
+              img.alt = "Imagen de la página";
+              img.style.cssText = `
+                max-width: 100%;
+                height: auto;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+              `;
+              
+              // Manejo de error de carga
+              img.onerror = function() {
+                this.style.display = "none";
+                const errorDiv = document.createElement("div");
+                errorDiv.textContent = "No se pudo cargar la imagen";
+                errorDiv.style.cssText = `
+                  color: #9ca3af;
+                  font-style: italic;
+                  padding: 1rem;
+                  background: rgba(15, 23, 42, 0.5);
+                  border-radius: 0.5rem;
+                `;
+                div.appendChild(errorDiv);
+              };
+              
+              div.appendChild(img);
+              cont.appendChild(div);
+            }
+          });
+        } else {
+          console.log("No hay bloques, verificando contenido tradicional...");
+          // Si no hay bloques, mostrar contenido tradicional
+          if (pagina && pagina.contenido && pagina.contenido.trim() !== "") {
+            console.log("Mostrando contenido tradicional:", pagina.contenido.substring(0, 100) + "...");
+            cont.innerHTML = pagina.contenido;
+          } else {
+            console.log("La página está completamente vacía");
+            cont.innerHTML = "<p style='color: #9ca3af;'>Esta página no tiene contenido todavía.</p>";
+          }
+        }
+
+      } catch (err) {
+        console.error("Error cargando bloques:", err);
+        
+        // Fallback a contenido tradicional si hay error cargando bloques
+        const cont = document.getElementById("contenido-pagina");
+        if (pagina && pagina.contenido && pagina.contenido.trim() !== "") {
+          console.log("Fallback: mostrando contenido tradicional debido a error");
+          cont.innerHTML = pagina.contenido;
+        } else {
+          console.log("Fallback: no hay contenido para mostrar");
+          cont.innerHTML = "<p style='color: #f97316;'>Error al cargar el contenido de la página.</p>";
+        }
+      }
+    }
+
+    // -------------------------------
+    // INIT
+    // -------------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("Frontend de página cargado");
+      loadBanner();
+      loadPage();
+    });
+  </script>
+</body>
+</html>
