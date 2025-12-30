@@ -13,6 +13,9 @@ app.use(express.urlencoded({ extended: true }));
 // Servir archivos estáticos - carpeta tienda/frontend bajo /tienda
 app.use("/tienda", express.static(path.join(__dirname, "../tienda/frontend")));
 
+// Servir archivos estáticos - carpeta admin bajo /admin
+app.use("/admin", express.static(path.join(__dirname, "../tienda/admin")));
+
 // Servir carpeta uploads para imágenes
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
