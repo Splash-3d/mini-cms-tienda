@@ -10,11 +10,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Servir archivos estáticos - carpeta tienda
-app.use("/tienda", express.static(path.join(__dirname, "../tienda")));
-
-// Servir archivos estáticos - carpeta frontend (para /tienda/productos.html, /tienda/pagina.html)
-app.use(express.static(path.join(__dirname, "../tienda/frontend")));
+// Servir archivos estáticos - carpeta tienda/frontend bajo /tienda
+app.use("/tienda", express.static(path.join(__dirname, "tienda/frontend")));
 
 // Servir carpeta uploads para imágenes
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
