@@ -219,6 +219,11 @@
       color: #a1a3b3;
     }
 
+    .product-precio {
+      color: #2ecc71;
+      font-weight: 500;
+    }
+
     .product-pill {
       display: inline-flex;
       align-items: center;
@@ -835,6 +840,7 @@
         meta.className = "product-meta";
 
         const precioSpan = document.createElement("span");
+        precioSpan.className = "product-precio";
         precioSpan.textContent = (p.precio || 0).toFixed(2).replace(".", ",") + " €";
 
         const stockSpan = document.createElement("span");
