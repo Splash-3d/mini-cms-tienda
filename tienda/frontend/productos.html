@@ -419,6 +419,42 @@
       pointer-events: none;
     }
 
+    /* Estilos para Filtros Activos (Estilo Shopify) */
+    .filtro-activo {
+      background: #ff6b35 !important;
+      border-color: #ff6b35 !important;
+      color: white !important;
+    }
+
+    .filtro-activo:hover {
+      background: #e55a2b !important;
+      border-color: #e55a2b !important;
+    }
+
+    /* Pills de filtros activos en escritorio */
+    .pill-filter.filtro-activo {
+      background: #ff6b35 !important;
+      border-color: #ff6b35 !important;
+      color: white !important;
+    }
+
+    /* Opciones de filtros móviles activas */
+    .filter-option.filtro-activo {
+      background: #ff6b35 !important;
+      border-color: #ff6b35 !important;
+      color: white !important;
+    }
+
+    /* Checkbox "Solo disponibles" activo */
+    .checkbox-label.filtro-activo .checkbox-custom {
+      background: #ff6b35 !important;
+      border-color: #ff6b35 !important;
+    }
+
+    .checkbox-label.filtro-activo {
+      color: #ff6b35 !important;
+    }
+
     /* Panel de Filtros Móvil */
     .filters-panel {
       display: none; /* Oculto por defecto en desktop */
@@ -2850,11 +2886,82 @@
 
       // Actualizar contador
       filtersCount.textContent = count;
+
+      // Aplicar estilos naranja a filtros activos (Estilo Shopify)
+      updateActiveFiltersStyles(search, cat, subcat, soloDisponibles);
     }
 
-    // -------------------------------
-    // CARRITO
-    // -------------------------------
+    function updateActiveFiltersStyles(search, cat, subcat, soloDisponibles) {
+      // Actualizar pill "Solo disponibles" en escritorio
+      const pillDisponibles = document.getElementById("pill-disponibles");
+      if (soloDisponibles) {
+        pillDisponibles.classList.add("filtro-activo");
+      } else {
+        pillDisponibles.classList.remove("filtro-activo");
+      }
+
+      // Actualizar opciones de filtros móviles
+      const mobileCategories = document.getElementById("mobile-categories");
+      const mobileSubcategories = document.getElementById("mobile-subcategories");
+      const mobileDisponibles = document.getElementById("mobile-disponibles");
+      const mobileDisponiblesLabel = mobileDisponibles?.nextElementSibling;
+
+      // Categorías móviles
+      if (mobileCategories) {
+        mobileCategories.querySelectorAll(".filter-option").forEach(opt => {
+          if (opt.dataset.value === cat && cat) {
+            opt.classList.add("filtro-activo");
+          } else {
+            opt.classList.remove("filtro-activo");
+          }
+        });
+      }
+
+      // Subcategorías móviles
+      if (mobileSubcategories) {
+        mobileSubcategories.querySelectorAll(".filter-option").forEach(opt => {
+          if (opt.dataset.value === subcat && subcat) {
+            opt.classList.add("filtro-activo");
+          } else {
+            opt.classList.remove("filtro-activo");
+          }
+        });
+      }
+
+      // Checkbox "Solo disponibles" móvil
+      if (mobileDisponiblesLabel) {
+        if (soloDisponibles) {
+          mobileDisponiblesLabel.classList.add("filtro-activo");
+        } else {
+          mobileDisponiblesLabel.classList.remove("filtro-activo");
+        }
+      }
+
+      // Actualizar selects de escritorio (si tienen clase especial)
+      const categorySelect = document.getElementById("filter-category");
+      const subcategorySelect = document.getElementById("filter-subcategory");
+      
+      if (cat) {
+        categorySelect.classList.add("filtro-activo");
+      } else {
+        categorySelect.classList.remove("filtro-activo");
+      }
+
+      if (subcat) {
+        subcategorySelect.classList.add("filtro-activo");
+      } else {
+        subcategorySelect.classList.remove("filtro-activo");
+      }
+
+      // Actualizar campo de búsqueda si tiene texto
+      const searchInput = document.getElementById("search-input");
+      if (search) {
+        searchInput.classList.add("filtro-activo");
+      } else {
+        searchInput.classList.remove("filtro-activo");
+      }
+    }
+
     function adjustCartQty(productId, delta) {
       const product = allProducts.find((p) => p.id === productId);
       if (!product) return;
