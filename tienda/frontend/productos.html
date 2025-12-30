@@ -2079,7 +2079,7 @@
         <div class="filters-content">
           <!-- Categorías -->
           <div class="filter-group">
-            <label class="filter-label">Categorías</label>
+            <label class="filter-label" id="mobile-categories-label">Todas las categorías</label>
             <div class="filter-options" id="mobile-categories">
               <!-- Se cargarán dinámicamente -->
             </div>
@@ -2441,6 +2441,7 @@
     // Seleccionar categoría móvil
     function selectMobileCategory(category) {
       const mobileCategories = document.getElementById("mobile-categories");
+      const categoriesLabel = document.getElementById("mobile-categories-label");
       
       // Actualizar estado visual con clase .filtro-activo
       mobileCategories.querySelectorAll(".filter-option").forEach(opt => {
@@ -2450,18 +2451,15 @@
         }
       });
 
-  // Limpiar filtros
-  if (filtersClear) {
-    filtersClear.addEventListener("click", () => {
-      clearMobileFilters();
-    });
-  }
-}
+      // Actualizar texto del label dinámicamente
+      if (category) {
+        categoriesLabel.textContent = category; // Mostrar nombre de la categoría seleccionada
+      } else {
+        categoriesLabel.textContent = "Todas las categorías"; // Volver al texto por defecto
+      }
 
-// Cargar opciones de filtros móviles
-function loadMobileFilterOptions() {
-  const mobileCategories = document.getElementById("mobile-categories");
-  const mobileSubcategories = document.getElementById("mobile-subcategories");
+      // Actualizar subcategorías
+      updateMobileSubcategories(category);
   const mobileDisponibles = document.getElementById("mobile-disponibles");
 
   if (!mobileCategories || !mobileSubcategories) return;
@@ -2539,6 +2537,7 @@ function loadMobileFilterOptions() {
       const mobileCategories = document.getElementById("mobile-categories");
       const mobileSubcategories = document.getElementById("mobile-subcategories");
       const mobileDisponibles = document.getElementById("mobile-disponibles");
+      const categoriesLabel = document.getElementById("mobile-categories-label");
 
       if (mobileCategories) {
         mobileCategories.querySelectorAll(".filter-option").forEach(opt => {
@@ -2556,6 +2555,11 @@ function loadMobileFilterOptions() {
 
       if (mobileDisponibles) {
         mobileDisponibles.checked = false;
+      }
+
+      // Restaurar texto del label a "Todas las categorías"
+      if (categoriesLabel) {
+        categoriesLabel.textContent = "Todas las categorías";
       }
 
       // Sincronizar con filtros de escritorio
