@@ -274,12 +274,41 @@ app.post("/api/productos", (req, res) => {
 });
 
 // PUT /api/productos/:id - Editar producto
-app.put("/api/productos/:id", (req, res) => {
+app.put("/api/productos/:id", upload.single('imagen'), (req, res) => {
   const id = parseInt(req.params.id);
-  const { nombre, precio, stock, categoria, subcategoria, en_oferta, precio_oferta, imagen } = req.body;
+  
+  // Obtener datos del FormData
+  const nombre = req.body.nombre;
+  const precio = req.body.precio;
+  const stock = req.body.stock;
+  const categoria = req.body.categoria || 'Sin categoría';
+  const subcategoria = req.body.subcategoria || '';
+  const en_oferta = req.body.en_oferta || '0';
+  const precio_oferta = req.body.precio_oferta || null;
+  const imagenActual = req.body.imagenActual || '';
+  
+  console.log("=== DEBUG PUT ===");
+  console.log("ID:", id);
+  console.log("Nombre:", nombre);
+  console.log("Precio:", precio);
+  console.log("Stock:", stock);
+  console.log("En oferta:", en_oferta);
+  console.log("Precio oferta:", precio_oferta);
+  console.log("Imagen actual:", imagenActual);
+  console.log("Archivo de imagen:", req.file);
+  console.log("=== FIN DEBUG PUT ===");
   
   if (!nombre || !precio) {
+    console.log("VALIDACIÓN FALLIDA - Nombre o precio vacíos");
     return res.status(400).json({ success: false, error: "Nombre y precio son obligatorios" });
+  }
+  
+  // Construir la ruta de la imagen
+  let imagenFinal = imagenActual;
+  if (req.file) {
+    imagenFinal = `/uploads/${req.file.filename}`;
+  } else if (!imagenActual) {
+    imagenFinal = "/uploads/default.jpg";
   }
   
   db.run(
@@ -287,7 +316,7 @@ app.put("/api/productos/:id", (req, res) => {
      SET nombre = ?, precio = ?, stock = ?, categoria = ?, subcategoria = ?, 
          en_oferta = ?, precio_oferta = ?, imagen = COALESCE(?, imagen)
      WHERE id = ?`,
-    [nombre, parseFloat(precio), parseInt(stock || 0), categoria, subcategoria, en_oferta || 0, precio_oferta || null, imagen, id],
+    [nombre, parseFloat(precio), parseInt(stock || 0), categoria, subcategoria, en_oferta === '1' ? 1 : 0, precio_oferta || null, imagenFinal, id],
     function(err) {
       if (err) {
         console.error("Error al actualizar producto:", err);
@@ -303,6 +332,7 @@ app.put("/api/productos/:id", (req, res) => {
         if (err) {
           return res.status(500).json({ success: false, error: "Error del servidor" });
         }
+        console.log("Producto actualizado exitosamente:", row);
         res.json({ success: true, producto: row });
       });
     }
