@@ -885,13 +885,23 @@
 
     /* Editar */
     async function editarProducto(p) {
+      console.log("=== DEBUG EDITAR ===");
+      console.log("Producto a editar:", p);
+      console.log("ID del producto:", p.id);
+      console.log("URL de la API:", `${API_BASE}/productos/${p.id}`);
+      console.log("=== FIN DEBUG EDITAR ===");
+
       // Obtener datos actualizados del producto desde la API
       try {
         const res = await fetch(`${API_BASE}/productos/${p.id}`);
+        console.log("Respuesta de la API:", res.status, res.statusText);
+        
         if (!res.ok) {
-          throw new Error("Error al obtener datos del producto");
+          throw new Error(`Error ${res.status}: ${res.statusText}`);
         }
+        
         const productoActualizado = await res.json();
+        console.log("Datos recibidos de la API:", productoActualizado);
         
         drawerTitle.textContent = "Editar producto";
         productIdInput.value = productoActualizado.id;
@@ -914,7 +924,7 @@
         openDrawer();
       } catch (err) {
         console.error("Error al cargar producto para editar:", err);
-        showToast("Error al cargar datos del producto", "error");
+        console.log("Usando fallback con datos de la lista");
         
         // Fallback: usar los datos del producto de la lista
         drawerTitle.textContent = "Editar producto";
