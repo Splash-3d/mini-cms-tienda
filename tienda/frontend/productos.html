@@ -2109,7 +2109,7 @@
       <section class="hero">
         <div class="hero-title-row">
           <h1 class="hero-title">Catálogo de Productos</h1>
-          <div class="hero-pill" id="hero-count">Cargando productos…</div>
+          <div class="hero-pill" id="hero-count"></div>
         </div>
       </section>
 
@@ -2380,7 +2380,7 @@
       const heroTitle = document.querySelector(".hero-title");
       const heroCount = document.querySelector("#hero-count");
       if (heroTitle) heroTitle.textContent = config.hero_title || "Catálogo de Productos";
-      if (heroCount) heroCount.textContent = config.loading_text || "Cargando productos…";
+      if (heroCount) heroCount.textContent = ""; // Sin texto de carga
 
       // Actualizar mensajes
       const emptyMessage = document.querySelector("#empty-message");
