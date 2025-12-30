@@ -2302,6 +2302,8 @@
       const filtersButton = document.getElementById("filters-button");
       const filtersPanel = document.getElementById("filters-panel");
       const filtersClose = document.getElementById("filters-close");
+      const filtersApply = document.getElementById("filters-apply");
+      const filtersClear = document.getElementById("filters-clear");
 
       // Verificar que los elementos existan
       if (!filtersButton || !filtersPanel || !filtersClose) {
@@ -2313,6 +2315,8 @@
       filtersButton.addEventListener("click", () => {
         filtersPanel.classList.add("open");
         document.body.style.overflow = "hidden"; // Prevenir scroll
+        // Cargar opciones de filtros al abrir
+        loadMobileFilterOptions();
       });
 
       // Cerrar panel con botón X
@@ -2336,6 +2340,194 @@
           document.body.style.overflow = "";
         }
       });
+
+      // Aplicar filtros
+      if (filtersApply) {
+        filtersApply.addEventListener("click", () => {
+          applyMobileFilters();
+          filtersPanel.classList.remove("open");
+          document.body.style.overflow = "";
+        });
+      }
+
+      // Limpiar filtros
+      if (filtersClear) {
+        filtersClear.addEventListener("click", () => {
+          clearMobileFilters();
+        });
+      }
+    }
+
+    // Cargar opciones de filtros móviles
+    function loadMobileFilterOptions() {
+      const mobileCategories = document.getElementById("mobile-categories");
+      const mobileSubcategories = document.getElementById("mobile-subcategories");
+      const mobileDisponibles = document.getElementById("mobile-disponibles");
+
+      if (!mobileCategories || !mobileSubcategories) return;
+
+      // Obtener categorías y subcategorías
+      const categories = new Set();
+      const subcategories = new Set();
+
+      allProducts.forEach((p) => {
+        if (p.categoria) categories.add(p.categoria);
+        if (p.subcategoria) subcategories.add(p.subcategoria);
+      });
+
+      // Cargar categorías
+      mobileCategories.innerHTML = "";
+      
+      // Opción "Todas"
+      const allCatOption = document.createElement("div");
+      allCatOption.className = "filter-option";
+      allCatOption.textContent = "Todas";
+      allCatOption.dataset.value = "";
+      allCatOption.addEventListener("click", () => selectMobileCategory(""));
+      mobileCategories.appendChild(allCatOption);
+
+      // Categorías reales
+      categories.forEach((cat) => {
+        const option = document.createElement("div");
+        option.className = "filter-option";
+        option.textContent = cat;
+        option.dataset.value = cat;
+        option.addEventListener("click", () => selectMobileCategory(cat));
+        mobileCategories.appendChild(option);
+      });
+
+      // Cargar subcategorías iniciales
+      updateMobileSubcategories("");
+
+      // Sincronizar checkbox "Solo disponibles" con el estado actual
+      if (mobileDisponibles) {
+        mobileDisponibles.checked = document.getElementById("pill-disponibles").classList.contains("active");
+      }
+    }
+
+    // Seleccionar categoría móvil
+    function selectMobileCategory(category) {
+      const mobileCategories = document.getElementById("mobile-categories");
+      
+      // Actualizar estado visual
+      mobileCategories.querySelectorAll(".filter-option").forEach(opt => {
+        opt.classList.remove("active");
+        if (opt.dataset.value === category) {
+          opt.classList.add("active");
+        }
+      });
+
+      // Actualizar subcategorías
+      updateMobileSubcategories(category);
+    }
+
+    // Actualizar subcategorías móviles
+    function updateMobileSubcategories(category) {
+      const mobileSubcategories = document.getElementById("mobile-subcategories");
+      if (!mobileSubcategories) return;
+
+      mobileSubcategories.innerHTML = "";
+
+      // Obtener subcategorías según la categoría
+      const subcategories = new Set();
+      allProducts.forEach((p) => {
+        if (category && p.categoria !== category) return;
+        if (p.subcategoria) subcategories.add(p.subcategoria);
+      });
+
+      // Opción "Todas"
+      const allSubOption = document.createElement("div");
+      allSubOption.className = "filter-option";
+      allSubOption.textContent = "Todas";
+      allSubOption.dataset.value = "";
+      allSubOption.addEventListener("click", () => selectMobileSubcategory(""));
+      mobileSubcategories.appendChild(allSubOption);
+
+      // Subcategorías reales
+      subcategories.forEach((sub) => {
+        const option = document.createElement("div");
+        option.className = "filter-option";
+        option.textContent = sub;
+        option.dataset.value = sub;
+        option.addEventListener("click", () => selectMobileSubcategory(sub));
+        mobileSubcategories.appendChild(option);
+      });
+    }
+
+    // Seleccionar subcategoría móvil
+    function selectMobileSubcategory(subcategory) {
+      const mobileSubcategories = document.getElementById("mobile-subcategories");
+      
+      // Actualizar estado visual
+      mobileSubcategories.querySelectorAll(".filter-option").forEach(opt => {
+        opt.classList.remove("active");
+        if (opt.dataset.value === subcategory) {
+          opt.classList.add("active");
+        }
+      });
+    }
+
+    // Aplicar filtros móviles
+    function applyMobileFilters() {
+      const mobileCategories = document.getElementById("mobile-categories");
+      const mobileSubcategories = document.getElementById("mobile-subcategories");
+      const mobileDisponibles = document.getElementById("mobile-disponibles");
+
+      // Obtener valores seleccionados
+      const selectedCategory = mobileCategories.querySelector(".filter-option.active")?.dataset.value || "";
+      const selectedSubcategory = mobileSubcategories.querySelector(".filter-option.active")?.dataset.value || "";
+      const soloDisponibles = mobileDisponibles?.checked || false;
+
+      // Sincronizar con filtros de escritorio
+      document.getElementById("filter-category").value = selectedCategory;
+      document.getElementById("filter-subcategory").value = selectedSubcategory;
+      
+      // Actualizar pill "Solo disponibles"
+      const pillDisponibles = document.getElementById("pill-disponibles");
+      if (soloDisponibles) {
+        pillDisponibles.classList.add("active");
+      } else {
+        pillDisponibles.classList.remove("active");
+      }
+
+      // Aplicar filtros usando la misma función que escritorio
+      currentPage = 1;
+      applyFilters();
+    }
+
+    // Limpiar filtros móviles
+    function clearMobileFilters() {
+      // Limpiar selecciones visuales
+      const mobileCategories = document.getElementById("mobile-categories");
+      const mobileSubcategories = document.getElementById("mobile-subcategories");
+      const mobileDisponibles = document.getElementById("mobile-disponibles");
+
+      if (mobileCategories) {
+        mobileCategories.querySelectorAll(".filter-option").forEach(opt => {
+          opt.classList.remove("active");
+        });
+        mobileCategories.querySelector(".filter-option")?.classList.add("active"); // Seleccionar "Todas"
+      }
+
+      if (mobileSubcategories) {
+        mobileSubcategories.querySelectorAll(".filter-option").forEach(opt => {
+          opt.classList.remove("active");
+        });
+        mobileSubcategories.querySelector(".filter-option")?.classList.add("active"); // Seleccionar "Todas"
+      }
+
+      if (mobileDisponibles) {
+        mobileDisponibles.checked = false;
+      }
+
+      // Sincronizar con filtros de escritorio
+      document.getElementById("filter-category").value = "";
+      document.getElementById("filter-subcategory").value = "";
+      document.getElementById("pill-disponibles").classList.remove("active");
+
+      // Aplicar filtros limpios
+      currentPage = 1;
+      applyFilters();
     }
 
     function setupUIEvents() {
