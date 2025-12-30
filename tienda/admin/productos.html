@@ -946,17 +946,6 @@
       openDrawer();
     });
 
-    /* Recargar */
-    reloadBtn.addEventListener("click", () => {
-      cargarProductos();
-      showToast("Productos recargados", "success");
-    });
-
-    /* Buscar */
-    searchInput.addEventListener("input", () => {
-      renderProductos();
-    });
-
     /* Guardar */
     saveBtn.addEventListener("click", async () => {
       const id = productIdInput.value;
@@ -966,6 +955,17 @@
       const disponible = disponibleSelect.value;
       const en_oferta = enOfertaSelect.value;
       const precio_oferta = precioOfertaInput.value || null;
+
+      // Debug: mostrar valores actuales
+      console.log("=== DEBUG GUARDAR ===");
+      console.log("ID:", id);
+      console.log("Nombre:", nombre);
+      console.log("Precio:", precio);
+      console.log("Stock:", stock);
+      console.log("¿Nombre vacío?", !nombre);
+      console.log("¿Precio inválido?", !isFinite(precio) || precio <= 0);
+      console.log("¿Stock inválido?", !Number.isInteger(stock) || stock < 0);
+      console.log("=== FIN DEBUG ===");
 
       if (!nombre || !isFinite(precio) || precio <= 0 || !Number.isInteger(stock) || stock < 0) {
         showToast("Revisa nombre, precio y stock", "error");
