@@ -1969,7 +1969,6 @@
     document.addEventListener("DOMContentLoaded", () => {
       setupUIEvents();
       setupMobileMenu(); // Inicializar menú móvil
-      setupMobileFilters(); // Inicializar filtros móviles
       fetchProducts();
       loadBanner();
       loadMenuPages();
@@ -2233,11 +2232,6 @@
 
       renderProducts();
       updateHeroCount();
-      
-      // Actualizar contador de filtros móviles
-      if (window.innerWidth <= 768) {
-        updateFiltersCount();
-      }
     }
 
     // -------------------------------
