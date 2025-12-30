@@ -12,7 +12,8 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || "CAMBIA_ESTO_EN_PRODUCCION";
 
 // Paths
-const DB_PATH = path.join(__dirname, "data", "database.sqlite");
+const dbPath = path.join(__dirname, "data", "database.sqlite");
+const DB_PATH = dbPath;
 const ADMIN_PATH = path.join(__dirname, "..", "tienda", "admin");
 const FRONTEND_PATH = path.join(__dirname, "..", "tienda", "frontend");
 const UPLOADS_PATH = path.join(__dirname, "data");
