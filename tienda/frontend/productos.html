@@ -150,6 +150,84 @@
       gap: 0.5rem;
     }
 
+    .desktop-filters {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .select {
+      position: relative;
+    }
+
+    .select select {
+      appearance: none;
+      width: 100%;
+      padding: 0.6rem 2rem 0.6rem 0.75rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .select::after {
+      content: "▼";
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .select select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .pill-filter {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .pill-filter:hover {
+      border-color: var(--accent);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    .pill-filter.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: background var(--transition-fast);
+    }
+
+    .pill-filter.active .dot {
+      background: white;
+    }
+
     .menu-paginas {
       display: flex;
       gap: 0.75rem;
@@ -265,92 +343,79 @@
       color: var(--text-muted);
     }
 
+    /* CONTROLES - DISEÑO SHOPIFY MÓVIL */
     .controls {
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem;
-      margin-bottom: 1.5rem;
       align-items: center;
+      margin-bottom: 1.5rem;
     }
 
     .search-wrapper {
-      flex: 1 1 200px;
+      flex: 1;
+      min-width: 200px;
       position: relative;
     }
 
     .search-input {
       width: 100%;
-      padding: 0.6rem 2.2rem 0.6rem 0.9rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.9);
+      padding: 0.6rem 1rem 0.6rem 2.5rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
       color: var(--text-main);
-      font-size: 0.88rem;
-      outline: none;
-      transition: border-color var(--transition-fast),
-        box-shadow var(--transition-fast),
-        background var(--transition-fast),
-        transform var(--transition-fast);
-    }
-
-    .search-input::placeholder {
-      color: rgba(148, 163, 184, 0.8);
+      font-size: 0.9rem;
+      transition: all var(--transition-fast);
     }
 
     .search-input:focus {
-      border-color: rgba(248, 250, 252, 0.25);
-      box-shadow: 0 0 0 1px rgba(248, 250, 252, 0.12);
-      background: rgba(15, 23, 42, 1);
-      transform: translateY(-1px);
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
     }
 
     .search-icon {
       position: absolute;
-      right: 0.8rem;
+      left: 0.75rem;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 0.9rem;
-      color: rgba(148, 163, 184, 0.9);
-      pointer-events: none;
+      font-size: 1rem;
+      color: var(--text-muted);
     }
 
-    .select {
-      flex: 0 1 140px;
+    /* Botón de Filtros */
+    .filters-button {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
       position: relative;
     }
 
-    .select select {
-      width: 100%;
-      padding: 0.55rem 2rem 0.55rem 0.75rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 0.82rem;
-      outline: none;
-      appearance: none;
-      cursor: pointer;
-      transition: border-color var(--transition-fast),
-        background var(--transition-fast),
-        transform var(--transition-fast),
-        box-shadow var(--transition-fast);
-    }
-
-    .select select:focus {
-      border-color: rgba(248, 250, 252, 0.25);
-      box-shadow: 0 0 0 1px rgba(248, 250, 252, 0.12);
-      background: rgba(15, 23, 42, 1);
+    .filters-button:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
       transform: translateY(-1px);
     }
 
-    .select::after {
-      content: "▾";
+    .filters-count {
       position: absolute;
-      right: 0.7rem;
-      top: 50%;
-      transform: translateY(-50%);
+      top: -4px;
+      right: -4px;
+      background: var(--accent);
+      color: white;
       font-size: 0.7rem;
-      color: rgba(148, 163, 184, 0.9);
+      font-weight: 600;
+      padding: 0.15rem 0.35rem;
       pointer-events: none;
     }
 
@@ -1243,6 +1308,16 @@
         display: flex;
       }
 
+      /* Ocultar filtros desktop */
+      .desktop-filters {
+        display: none;
+      }
+
+      /* Mostrar botón de filtros móvil */
+      .filters-button {
+        display: flex;
+      }
+
       /* Header adaptado para móvil */
       .site-header {
         backdrop-filter: blur(12px);
@@ -1285,165 +1360,17 @@
         min-width: auto;
       }
 
-      /* Overlay del menú móvil */
-      .mobile-menu-overlay {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(2, 6, 23, 0.95);
-        backdrop-filter: blur(20px);
-        z-index: 100;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-      }
-
-      .mobile-menu-overlay.open {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      .mobile-menu-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-      }
-
-      .mobile-menu-close {
-        background: none;
-        border: none;
-        color: var(--text-main);
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 8px;
-        transition: background 0.2s ease;
-      }
-
-      .mobile-menu-close:hover {
-        background: rgba(148, 163, 184, 0.1);
-      }
-
-      .mobile-nav {
-        padding: 1.5rem 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-
-      .mobile-nav-link {
-        background: none;
-        border: none;
-        color: var(--text-main);
-        font-size: 1.1rem;
-        font-weight: 500;
-        padding: 0.75rem 1rem;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: background 0.2s ease;
-        text-align: left;
-      }
-
-      .mobile-nav-link.active {
-        background: rgba(249, 115, 22, 0.15);
-        color: #f97316;
-      }
-
-      .mobile-nav-link:hover {
-        background: rgba(148, 163, 184, 0.1);
-      }
-
-      .mobile-menu-paginas {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      .mobile-menu-paginas a {
-        color: var(--text-muted);
-        text-decoration: none;
-        padding: 0.6rem 1rem;
-        border-radius: 10px;
-        transition: all 0.2s ease;
-        font-size: 0.95rem;
-      }
-
-      .mobile-menu-paginas a:hover {
-        background: rgba(148, 163, 184, 0.1);
-        color: var(--text-main);
-      }
-
-      .mobile-cart-button {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem;
-        background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(29, 78, 216, 0.15));
-        border: 1px solid rgba(249, 115, 22, 0.3);
-        border-radius: 12px;
-        color: var(--text-main);
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .mobile-cart-button:hover {
-        background: linear-gradient(135deg, rgba(249, 115, 22, 0.25), rgba(29, 78, 216, 0.25));
-        transform: translateY(-1px);
-      }
-
-      /* -------------------------
-         CONTENIDO MÓVIL
-      -------------------------- */
-
-      main.site-main {
-        padding: 1rem 1rem 2rem;
-      }
-
-      /* Hero adaptado */
-      .hero {
-        padding: 1.5rem 0;
-        text-align: center;
-      }
-
-      .hero-title-row {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .hero-title {
-        font-size: 2rem;
-        text-align: center;
-      }
-
-      .hero-pill {
-        font-size: 0.85rem;
-        padding: 0.4rem 0.8rem;
-      }
-
-      .hero-subtitle {
-        font-size: 0.9rem;
-        text-align: center;
-        line-height: 1.5;
-        max-width: 100%;
-      }
-
       /* Controles adaptados */
       .controls {
-        flex-direction: column;
-        gap: 1rem;
+        flex-direction: row;
+        gap: 0.75rem;
         padding: 1rem 0;
+        align-items: center;
       }
 
       .search-wrapper {
-        order: -1; /* Búsqueda primero */
+        flex: 1;
+        min-width: 0;
       }
 
       .search-input {
@@ -1458,30 +1385,16 @@
         font-size: 1.1rem;
       }
 
-      .select {
-        width: 100%;
-      }
-
-      .select select {
-        width: 100%;
-        font-size: 0.95rem;
-        padding: 0.75rem 2.5rem 0.75rem 1rem;
-        height: 48px;
-        border-radius: 12px;
-      }
-
-      .pill-filter {
-        align-self: center;
-        padding: 0.6rem 1rem;
-        font-size: 0.9rem;
-        border-radius: 999px;
-        min-height: 40px;
+      /* Panel de filtros móvil */
+      .filters-panel {
+        display: block;
       }
 
       /* Grid de productos - 1 o 2 columnas */
       .grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
+        margin: 0 0 2rem 0;
       }
 
       .card {
@@ -1715,6 +1628,36 @@
         padding: 2rem 1rem;
         text-align: center;
       }
+
+      /* Hero adaptado */
+      .hero {
+        padding: 1.5rem 0;
+        text-align: center;
+      }
+
+      .hero-title-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+        text-align: center;
+      }
+
+      .hero-pill {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+      }
+
+      .hero-subtitle {
+        font-size: 0.9rem;
+        text-align: center;
+        line-height: 1.5;
+        max-width: 100%;
+      }
     }
 
     /* Tablets - ajustes intermedios */
@@ -1846,28 +1789,90 @@
             id="search-input"
             type="search"
             class="search-input"
-            placeholder="Buscar por nombre o descripción..."
+            placeholder="Buscar productos..."
           />
           <span class="search-icon">🔍</span>
         </div>
 
-        <div class="select">
-          <select id="filter-category">
-            <option value="">Categorías</option>
-          </select>
-        </div>
-
-        <div class="select">
-          <select id="filter-subcategory">
-            <option value="">Subcategorías</option>
-          </select>
-        </div>
-
-        <button class="pill-filter" id="pill-disponibles" type="button">
-          <span class="dot"></span>
-          Solo disponibles
+        <!-- Botón de Filtros para Móvil -->
+        <button class="filters-button" id="filters-button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
+          </svg>
+          <span>Filtros</span>
+          <span class="filters-count" id="filters-count">0</span>
         </button>
+
+        <!-- Filtros Desktop (ocultos en móvil) -->
+        <div class="desktop-filters">
+          <div class="select">
+            <select id="filter-category">
+              <option value="">Categorías</option>
+            </select>
+          </div>
+          <div class="select">
+            <select id="filter-subcategory">
+              <option value="">Subcategorías</option>
+            </select>
+          </div>
+          <button class="pill-filter" id="pill-disponibles" type="button">
+            <span class="dot"></span>
+            Solo disponibles
+          </button>
+        </div>
       </section>
+
+      <!-- Panel de Filtros Móvil -->
+      <div class="filters-panel" id="filters-panel">
+        <div class="filters-header">
+          <h3 class="filters-title">Filtros</h3>
+          <button class="filters-close" id="filters-close" aria-label="Cerrar filtros">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="filters-content">
+          <!-- Categorías -->
+          <div class="filter-group">
+            <label class="filter-label">Categorías</label>
+            <div class="filter-options" id="mobile-categories">
+              <!-- Se cargarán dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Subcategorías -->
+          <div class="filter-group">
+            <label class="filter-label">Subcategorías</label>
+            <div class="filter-options" id="mobile-subcategories">
+              <!-- Se cargarán dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Disponibilidad -->
+          <div class="filter-group">
+            <label class="filter-label">Disponibilidad</label>
+            <div class="filter-checkbox">
+              <input type="checkbox" id="mobile-disponibles" />
+              <label for="mobile-disponibles" class="checkbox-label">
+                <span class="checkbox-custom"></span>
+                Solo productos disponibles
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="filters-footer">
+          <button class="filters-apply" id="filters-apply">
+            Aplicar filtros
+          </button>
+          <button class="filters-clear" id="filters-clear">
+            Limpiar todo
+          </button>
+        </div>
+      </div>
 
       <!-- Grid de productos -->
       <section id="products-section">
@@ -1964,6 +1969,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       setupUIEvents();
       setupMobileMenu(); // Inicializar menú móvil
+      setupMobileFilters(); // Inicializar filtros móviles
       fetchProducts();
       loadBanner();
       loadMenuPages();
@@ -2227,6 +2233,11 @@
 
       renderProducts();
       updateHeroCount();
+      
+      // Actualizar contador de filtros móviles
+      if (window.innerWidth <= 768) {
+        updateFiltersCount();
+      }
     }
 
     // -------------------------------
