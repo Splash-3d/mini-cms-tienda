@@ -690,7 +690,12 @@
 
   <script>
     const API_BASE = "/api";
-    const token = localStorage.getItem("admin_token");
+    
+    // Verificar token en memoria, si no existe redirigir al login
+    const token = window.adminToken;
+    if (!token) {
+      window.location.href = "login.html";
+    }
 
     /* Toasts */
     const toastContainer = document.getElementById("toast-container");
@@ -1080,7 +1085,6 @@
 
         showToast("Producto borrado", "success");
         cargarProductos();
-
       } catch (err) {
         showToast("Error de conexión al borrar", "error");
       }
@@ -1088,25 +1092,15 @@
 
     /* Logout */
     logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("admin_token");
+      // Eliminar token de memoria
+      window.adminToken = null;
       showToast("Sesión cerrada", "success");
       setTimeout(() => {
         window.location.href = "login.html";
-      }, 700);
+      }, 800);
     });
 
     /* Sidebar móvil */
-    const mobileMenuToggle = document.getElementById("mobile-menu-toggle");
-    const mobileSidebar = document.getElementById("mobile-sidebar");
-    const mobileSidebarClose = document.getElementById("mobile-sidebar-close");
-
-    mobileMenuToggle.addEventListener("click", () => {
-      mobileSidebar.classList.add("open");
-    });
-
-    mobileSidebarClose.addEventListener("click", () => {
-      mobileSidebar.classList.remove("open");
-    });
 
     // -------------------------------
     // FUNCIONALIDAD DE SECCIONES

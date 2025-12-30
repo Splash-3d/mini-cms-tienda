@@ -214,7 +214,8 @@
           return;
         }
 
-        localStorage.setItem("admin_token", data.token);
+        // Token solo en memoria (no guardar en localStorage/sessionStorage/cookies)
+        window.adminToken = data.token;
         showToast("Login correcto, entrando…", "success");
 
         setTimeout(() => {
