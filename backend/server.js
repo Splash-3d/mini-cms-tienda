@@ -120,10 +120,8 @@ app.post("/api/login", (req, res) => {
         });
       }
       
-      // Validar contraseña - solo se acepta el hash real
-      const passwordCorrecta = 
-        row.password_hash === password ||     // hash exacto de la BD
-        password === "$2b$10$7Q0oNdikJxdc1Q3c3rUl4eiDXF/t8L3KGoSXssV5mPeS0vo2.xKmm"; // hash específico de Óscar/admin
+      // Validar contraseña - solo se acepta el hash real de la base de datos
+      const passwordCorrecta = row.password_hash === password;
       
       if (passwordCorrecta) {
         res.json({
