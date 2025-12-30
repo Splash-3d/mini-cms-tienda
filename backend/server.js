@@ -977,14 +977,32 @@ app.delete("/api/usuarios/:id", (req, res) => {
 });
 
 // ================================
-// RUTAS DE CONFIGURACIÓN DEL SITIO
+// CREAR TABLA DE CONFIGURACIÓN
 // ================================
 
-// GET /api/config - Obtener configuración del sitio
-app.get("/api/config", (req, res) => {
-  const config = {
+// Crear tabla de configuración si no existe
+db.run(`
+  CREATE TABLE IF NOT EXISTS site_config (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    key TEXT UNIQUE NOT NULL,
+    value TEXT NOT NULL,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`, (err) => {
+  if (err) {
+    console.error("Error creando tabla site_config:", err);
+  } else {
+    console.log("Tabla site_config creada o verificada correctamente");
+    // Insertar configuración por defecto si no existe
+    insertDefaultConfig();
+  }
+});
+
+// Insertar configuración por defecto
+function insertDefaultConfig() {
+  const defaultConfig = {
     site_name: "Tienda",
-    site_subtitle: "Productos Premium",
+    site_subtitle: "Productos Premium", 
     site_description: "Mini CMS Tienda · Frontend público",
     hero_title: "Catálogo de Productos",
     loading_text: "Cargando productos…",
@@ -992,42 +1010,128 @@ app.get("/api/config", (req, res) => {
     error_products_text: "Error al cargar los productos. Revisa el servidor.",
     empty_cart_text: "Tu carrito está vacío.",
     checkout_button_text: "Finalizar (demo)",
-    product_placeholder_name: "Producto sin nombre",
-    footer_links: [
+    product_placeholder_name: "Producto sin nombre"
+  };
+
+  Object.entries(defaultConfig).forEach(([key, value]) => {
+    db.run(
+      "INSERT OR IGNORE INTO site_config (key, value) VALUES (?, ?)",
+      [key, value],
+      (err) => {
+        if (err) {
+          console.error(`Error insertando config ${key}:`, err);
+        }
+      }
+    );
+  });
+}
+
+// ================================
+// RUTAS DE CONFIGURACIÓN DEL SITIO
+// ================================
+
+// GET /api/config - Obtener configuración del sitio desde base de datos
+app.get("/api/config", (req, res) => {
+  db.all("SELECT key, value FROM site_config", (err, rows) => {
+    if (err) {
+      console.error("Error obteniendo configuración:", err);
+      return res.status(500).json({ success: false, error: "Error del servidor" });
+    }
+
+    const config = {};
+    rows.forEach(row => {
+      config[row.key] = row.value;
+    });
+
+    // Agregar footer links por defecto (no están en BD)
+    config.footer_links = [
       { text: "Términos", url: "/terminos" },
       { text: "Privacidad", url: "/privacidad" },
       { text: "Contacto", url: "/contacto" }
-    ]
-  };
-  
-  res.json(config);
+    ];
+
+    res.json(config);
+  });
 });
 
-// POST /api/config - Actualizar configuración del sitio
+// POST /api/config - Actualizar configuración del sitio en base de datos
 app.post("/api/config", (req, res) => {
-  const { site_name, site_subtitle, site_description, hero_title, loading_text, empty_products_text, error_products_text, empty_cart_text, checkout_button_text, product_placeholder_name, footer_links } = req.body;
+  const configData = req.body;
   
-  // Por ahora, solo devolvemos éxito. En una implementación real, se guardaría en base de datos
-  res.json({ 
-    success: true, 
-    config: {
-      site_name: site_name || "Tienda",
-      site_subtitle: site_subtitle || "Productos Premium", 
-      site_description: site_description || "Mini CMS Tienda · Frontend público",
-      hero_title: hero_title || "Catálogo de Productos",
-      loading_text: loading_text || "Cargando productos…",
-      empty_products_text: empty_products_text || "No hay productos que coincidan con los filtros.",
-      error_products_text: error_products_text || "Error al cargar los productos. Revisa el servidor.",
-      empty_cart_text: empty_cart_text || "Tu carrito está vacío.",
-      checkout_button_text: checkout_button_text || "Finalizar (demo)",
-      product_placeholder_name: product_placeholder_name || "Producto sin nombre",
-      footer_links: footer_links || [
-        { text: "Términos", url: "/terminos" },
-        { text: "Privacidad", url: "/privacidad" },
-        { text: "Contacto", url: "/contacto" }
-      ]
-    }
+  if (!configData || typeof configData !== 'object') {
+    return res.status(400).json({ 
+      success: false, 
+      error: "Se requiere un objeto de configuración válido" 
+    });
+  }
+
+  // Actualizar cada valor de configuración
+  const updates = [];
+  const errors = [];
+
+  Object.entries(configData).forEach(([key, value]) => {
+    if (key === 'footer_links') return; // Los footer links no se guardan en BD por ahora
+
+    updates.push(new Promise((resolve, reject) => {
+      db.run(
+        "INSERT OR REPLACE INTO site_config (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)",
+        [key, String(value)],
+        function(err) {
+          if (err) {
+            errors.push({ key, error: err.message });
+            reject(err);
+          } else {
+            resolve({ key, success: true });
+          }
+        }
+      );
+    }));
   });
+
+  Promise.all(updates)
+    .then(() => {
+      if (errors.length > 0) {
+        return res.status(500).json({ 
+          success: false, 
+          error: "Error actualizando algunos valores",
+          details: errors 
+        });
+      }
+
+      // Obtener configuración actualizada para devolverla
+      db.all("SELECT key, value FROM site_config", (err, rows) => {
+        if (err) {
+          return res.status(500).json({ 
+            success: false, 
+            error: "Error obteniendo configuración actualizada" 
+          });
+        }
+
+        const updatedConfig = {};
+        rows.forEach(row => {
+          updatedConfig[row.key] = row.value;
+        });
+
+        updatedConfig.footer_links = configData.footer_links || [
+          { text: "Términos", url: "/terminos" },
+          { text: "Privacidad", url: "/privacidad" },
+          { text: "Contacto", url: "/contacto" }
+        ];
+
+        res.json({ 
+          success: true, 
+          config: updatedConfig,
+          message: "Configuración actualizada correctamente"
+        });
+      });
+    })
+    .catch((err) => {
+      console.error("Error en actualización de configuración:", err);
+      res.status(500).json({ 
+        success: false, 
+        error: "Error del servidor al actualizar configuración" 
+      });
+    });
 });
 
 // ================================

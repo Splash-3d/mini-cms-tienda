@@ -790,26 +790,37 @@
 
     .card-title-row {
       display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 0.5rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.4rem;
+      width: 100%;
     }
 
     .card-title {
       font-size: 0.96rem;
       font-weight: 500;
+      line-height: 1.3;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      hyphens: auto;
+      width: 100%;
+      min-height: 2.4rem; /* Espacio para 2 líneas */
     }
 
     .card-price {
       font-size: 0.95rem;
       font-weight: 600;
       color: #f97316;
+      white-space: nowrap;
+      align-self: flex-start;
     }
 
     .price {
       font-size: 1rem;
       font-weight: 600;
       color: #e5e7eb;
+      white-space: nowrap;
     }
 
     .price-original {
@@ -817,12 +828,14 @@
       color: #9ca3af;
       text-decoration: line-through;
       margin-right: 0.35rem;
+      white-space: nowrap;
     }
 
     .price-offer {
       font-size: 1rem;
       font-weight: 700;
       color: #4ade80;
+      white-space: nowrap;
     }
 
     .badge-oferta {
@@ -835,6 +848,8 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .card-meta-row {
@@ -2293,7 +2308,32 @@
       loadBanner();
       loadMenuPages();
       loadSiteConfig();
+      setupConfigAutoReload();
     });
+
+    // -------------------------------
+    // AUTO-RELOAD DE CONFIGURACIÓN
+    // -------------------------------
+    function setupConfigAutoReload() {
+      // Recargar configuración cada 30 segundos
+      setInterval(async () => {
+        try {
+          const res = await fetch("/api/config");
+          const config = await res.json();
+          
+          // Verificar si algo cambió
+          const hasChanges = JSON.stringify(config) !== JSON.stringify(siteConfig);
+          
+          if (hasChanges) {
+            siteConfig = config;
+            applySiteConfig(config);
+            console.log("Configuración actualizada automáticamente");
+          }
+        } catch (err) {
+          console.error("Error recargando configuración:", err);
+        }
+      }, 30000); // 30 segundos
+    }
 
     // -------------------------------
     // CONFIGURACIÓN DEL SITIO
