@@ -840,33 +840,46 @@
     .card-meta-row {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.78rem;
+      align-items: flex-start;
+      gap: 0.3rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
+      width: 100%;
+      line-height: 1.3;
     }
 
     .badge {
-      padding: 0.18rem 0.55rem;
+      padding: 0.15rem 0.45rem;
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.55);
       background: rgba(15, 23, 42, 0.9);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.25rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .badge-dot {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
       border-radius: 999px;
       background: rgba(148, 163, 184, 0.95);
+      flex-shrink: 0;
     }
 
     .stock {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 500;
+      line-height: 1.3;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      flex: 1;
+      min-width: 0;
     }
 
     .stock.en {
@@ -880,11 +893,20 @@
     .card-footer {
       margin-top: 0.4rem;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
+      flex-direction: column;
+      gap: 0.6rem;
       padding-top: 0.5rem;
       border-top: 1px dashed rgba(31, 41, 55, 0.9);
+      width: 100%;
+    }
+
+    .card-footer .qty-controls {
+      align-self: flex-start;
+    }
+
+    .card-footer .add-to-cart {
+      width: 100%;
+      justify-content: center;
     }
 
     .qty-controls {
@@ -1095,13 +1117,67 @@
         min-height: auto;
       }
 
+      .card-title-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+        width: 100%;
+      }
+
       .card-title {
         font-size: 0.9rem;
-        line-height: 1.2;
+        line-height: 1.3;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        width: 100%;
+        min-height: 2.4rem; /* Espacio para 2 líneas */
       }
 
       .card-price-row {
+        display: flex;
         flex-wrap: wrap;
+        align-items: center;
+        gap: 0.3rem;
+        width: 100%;
+      }
+
+      .price-original {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        text-decoration: line-through;
+        margin-right: 0.3rem;
+        white-space: nowrap;
+      }
+
+      .price-offer {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #4ade80;
+        white-space: nowrap;
+      }
+
+      .card-price {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #f97316;
+        white-space: nowrap;
+      }
+
+      .badge-oferta {
+        display: inline-block;
+        padding: 0.12rem 0.4rem;
+        border-radius: 999px;
+        background: #f97316;
+        color: #111827;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
 
       .modal-content {
@@ -2204,6 +2280,7 @@
     let currentPage = 1;
     const pageSize = 8;
     let currentModalProduct = null;
+    let siteConfig = {}; // Configuración del sitio desde backend
 
     // -------------------------------
     // INIT
@@ -2215,7 +2292,90 @@
       fetchProducts();
       loadBanner();
       loadMenuPages();
+      loadSiteConfig();
     });
+
+    // -------------------------------
+    // CONFIGURACIÓN DEL SITIO
+    // -------------------------------
+    async function loadSiteConfig() {
+      try {
+        const res = await fetch("/api/config");
+        const config = await res.json();
+        siteConfig = config;
+        
+        // Aplicar configuración al sitio
+        applySiteConfig(config);
+        
+      } catch (err) {
+        console.error("Error cargando configuración del sitio:", err);
+        // Usar configuración por defecto si hay error
+        siteConfig = {
+          site_name: "Tienda",
+          site_subtitle: "Productos Premium",
+          site_description: "Mini CMS Tienda · Frontend público",
+          hero_title: "Catálogo de Productos",
+          loading_text: "Cargando productos…",
+          empty_products_text: "No hay productos que coincidan con los filtros.",
+          error_products_text: "Error al cargar los productos. Revisa el servidor.",
+          empty_cart_text: "Tu carrito está vacío.",
+          checkout_button_text: "Finalizar (demo)",
+          product_placeholder_name: "Producto sin nombre",
+          footer_links: [
+            { text: "Términos", url: "/terminos" },
+            { text: "Privacidad", url: "/privacidad" },
+            { text: "Contacto", url: "/contacto" }
+          ]
+        };
+        applySiteConfig(siteConfig);
+      }
+    }
+
+    function applySiteConfig(config) {
+      // Actualizar header
+      const brandTitle = document.querySelector(".brand-title");
+      const brandSubtitle = document.querySelector(".brand-sub");
+      if (brandTitle) brandTitle.textContent = config.site_name || "Tienda";
+      if (brandSubtitle) brandSubtitle.textContent = config.site_subtitle || "Productos Premium";
+
+      // Actualizar hero
+      const heroTitle = document.querySelector(".hero-title");
+      const heroCount = document.querySelector("#hero-count");
+      if (heroTitle) heroTitle.textContent = config.hero_title || "Catálogo de Productos";
+      if (heroCount) heroCount.textContent = config.loading_text || "Cargando productos…";
+
+      // Actualizar mensajes
+      const emptyMessage = document.querySelector("#empty-message");
+      const errorMessage = document.querySelector("#error-message");
+      if (emptyMessage) emptyMessage.textContent = config.empty_products_text || "No hay productos que coincidan con los filtros.";
+      if (errorMessage) errorMessage.textContent = config.error_products_text || "Error al cargar los productos. Revisa el servidor.";
+
+      // Actualizar carrito
+      const cartEmpty = document.querySelector(".cart-empty");
+      const checkoutButton = document.querySelector(".cart-checkout span");
+      if (cartEmpty) cartEmpty.textContent = config.empty_cart_text || "Tu carrito está vacío.";
+      if (checkoutButton) checkoutButton.textContent = config.checkout_button_text || "Finalizar (demo)";
+
+      // Actualizar footer
+      const footerDescription = document.querySelector(".footer-inner > div");
+      const footerLinks = document.querySelector(".footer-links");
+      if (footerDescription) footerDescription.textContent = config.site_description || "Mini CMS Tienda · Frontend público";
+      
+      if (footerLinks && config.footer_links) {
+        footerLinks.innerHTML = "";
+        config.footer_links.forEach(link => {
+          const linkElement = document.createElement("span");
+          linkElement.className = "footer-link";
+          linkElement.textContent = link.text;
+          if (link.url) {
+            linkElement.addEventListener("click", () => {
+              window.location.href = link.url;
+            });
+          }
+          footerLinks.appendChild(linkElement);
+        });
+      }
+    }
 
     // -------------------------------
     // BANNER
@@ -2776,7 +2936,7 @@
         </div>
         <div class="card-body">
           <div class="card-title-row">
-            <h2 class="card-title">${p.nombre || "Producto sin nombre"}</h2>
+            <h2 class="card-title">${p.nombre || siteConfig.product_placeholder_name || "Producto sin nombre"}</h2>
             ${
               p.en_oferta && p.precio_oferta
                 ? `
@@ -3019,7 +3179,7 @@
       if (!Object.keys(cart).length) {
         const empty = document.createElement("div");
         empty.className = "cart-empty";
-        empty.textContent = "Tu carrito está vacío.";
+        empty.textContent = siteConfig.empty_cart_text || "Tu carrito está vacío.";
         cartBody.appendChild(empty);
       } else {
         Object.values(cart).forEach(({ product, qty }) => {
@@ -3107,7 +3267,7 @@
       const modalAdd = document.getElementById("modal-add");
 
       modalImage.src = product.imagen || "";
-      modalTitle.textContent = product.nombre || "Producto sin nombre";
+      modalTitle.textContent = product.nombre || siteConfig.product_placeholder_name || "Producto sin nombre";
       
       if (product.en_oferta && product.precio_oferta) {
         modalPrice.innerHTML = `

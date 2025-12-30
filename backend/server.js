@@ -977,6 +977,60 @@ app.delete("/api/usuarios/:id", (req, res) => {
 });
 
 // ================================
+// RUTAS DE CONFIGURACIÓN DEL SITIO
+// ================================
+
+// GET /api/config - Obtener configuración del sitio
+app.get("/api/config", (req, res) => {
+  const config = {
+    site_name: "Tienda",
+    site_subtitle: "Productos Premium",
+    site_description: "Mini CMS Tienda · Frontend público",
+    hero_title: "Catálogo de Productos",
+    loading_text: "Cargando productos…",
+    empty_products_text: "No hay productos que coincidan con los filtros.",
+    error_products_text: "Error al cargar los productos. Revisa el servidor.",
+    empty_cart_text: "Tu carrito está vacío.",
+    checkout_button_text: "Finalizar (demo)",
+    product_placeholder_name: "Producto sin nombre",
+    footer_links: [
+      { text: "Términos", url: "/terminos" },
+      { text: "Privacidad", url: "/privacidad" },
+      { text: "Contacto", url: "/contacto" }
+    ]
+  };
+  
+  res.json(config);
+});
+
+// POST /api/config - Actualizar configuración del sitio
+app.post("/api/config", (req, res) => {
+  const { site_name, site_subtitle, site_description, hero_title, loading_text, empty_products_text, error_products_text, empty_cart_text, checkout_button_text, product_placeholder_name, footer_links } = req.body;
+  
+  // Por ahora, solo devolvemos éxito. En una implementación real, se guardaría en base de datos
+  res.json({ 
+    success: true, 
+    config: {
+      site_name: site_name || "Tienda",
+      site_subtitle: site_subtitle || "Productos Premium", 
+      site_description: site_description || "Mini CMS Tienda · Frontend público",
+      hero_title: hero_title || "Catálogo de Productos",
+      loading_text: loading_text || "Cargando productos…",
+      empty_products_text: empty_products_text || "No hay productos que coincidan con los filtros.",
+      error_products_text: error_products_text || "Error al cargar los productos. Revisa el servidor.",
+      empty_cart_text: empty_cart_text || "Tu carrito está vacío.",
+      checkout_button_text: checkout_button_text || "Finalizar (demo)",
+      product_placeholder_name: product_placeholder_name || "Producto sin nombre",
+      footer_links: footer_links || [
+        { text: "Términos", url: "/terminos" },
+        { text: "Privacidad", url: "/privacidad" },
+        { text: "Contacto", url: "/contacto" }
+      ]
+    }
+  });
+});
+
+// ================================
 // RUTAS DE PÁGINAS ESTÁTICAS (para compatibilidad)
 // ================================
 
