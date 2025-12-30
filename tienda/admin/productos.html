@@ -964,10 +964,16 @@
       console.log("nombreInput:", nombreInput);
       console.log("precioInput:", precioInput);
       console.log("stockInput:", stockInput);
+      console.log("enOfertaSelect:", enOfertaSelect);
+      console.log("precioOfertaInput:", precioOfertaInput);
+      console.log("disponibleSelect:", disponibleSelect);
       console.log("productIdInput.value:", productIdInput.value);
       console.log("nombreInput.value:", nombreInput.value);
       console.log("precioInput.value:", precioInput.value);
       console.log("stockInput.value:", stockInput.value);
+      console.log("enOfertaSelect.value:", enOfertaSelect.value);
+      console.log("precioOfertaInput.value:", precioOfertaInput.value);
+      console.log("disponibleSelect.value:", disponibleSelect.value);
       console.log("=== FIN DEBUG DOM ===");
 
       const id = productIdInput.value;
@@ -981,15 +987,29 @@
       // Debug: mostrar valores actuales
       console.log("=== DEBUG GUARDAR ===");
       console.log("ID:", id);
-      console.log("Nombre:", nombre);
-      console.log("Precio:", precio);
-      console.log("Stock:", stock);
+      console.log("Nombre (raw):", nombreInput.value);
+      console.log("Nombre (trim):", nombre);
+      console.log("Precio (raw):", precioInput.value);
+      console.log("Precio (parseFloat):", precio);
+      console.log("Stock (raw):", stockInput.value);
+      console.log("Stock (parseInt):", stock);
+      console.log("Disponible:", disponible);
+      console.log("En oferta:", en_oferta);
+      console.log("Precio oferta (raw):", precioOfertaInput.value);
+      console.log("Precio oferta (processed):", precio_oferta);
       console.log("¿Nombre vacío?", !nombre);
+      console.log("¿Nombre es string vacío?", nombre === "");
       console.log("¿Precio inválido?", !isFinite(precio) || precio <= 0);
+      console.log("¿Precio es NaN?", isNaN(precio));
       console.log("¿Stock inválido?", !Number.isInteger(stock) || stock < 0);
+      console.log("¿Stock es NaN?", isNaN(stock));
       console.log("=== FIN DEBUG ===");
 
       if (!nombre || !isFinite(precio) || precio <= 0 || !Number.isInteger(stock) || stock < 0) {
+        console.log("VALIDACIÓN FALLIDA - Detalles:");
+        console.log("- Nombre inválido:", !nombre);
+        console.log("- Precio inválido:", !isFinite(precio) || precio <= 0);
+        console.log("- Stock inválido:", !Number.isInteger(stock) || stock < 0);
         showToast("Revisa nombre, precio y stock", "error");
         return;
       }
