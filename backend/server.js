@@ -224,6 +224,24 @@ app.get("/api/productos", (req, res) => {
   });
 });
 
+// GET /api/productos/:id - Obtener un producto específico
+app.get("/api/productos/:id", (req, res) => {
+  const { id } = req.params;
+  
+  db.get("SELECT * FROM productos WHERE id = ?", [id], (err, row) => {
+    if (err) {
+      console.error("Error al obtener producto:", err);
+      return res.status(500).json({ success: false, error: "Error del servidor" });
+    }
+    
+    if (!row) {
+      return res.status(404).json({ success: false, error: "Producto no encontrado" });
+    }
+    
+    res.json(row);
+  });
+});
+
 // POST /api/productos - Agregar nuevo producto
 app.post("/api/productos", (req, res) => {
   const { nombre, precio, stock, categoria, subcategoria, en_oferta, precio_oferta, imagen } = req.body;
