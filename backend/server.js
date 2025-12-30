@@ -122,6 +122,12 @@ app.post("/api/login", (req, res) => {
       }
       
       // Validar contraseña usando bcrypt
+      console.log("=== DEBUG LOGIN ===");
+      console.log("Usuario recibido:", username);
+      console.log("Contraseña recibida:", password);
+      console.log("Usuario encontrado en BD:", row.usuario);
+      console.log("Hash en BD:", row.password_hash);
+      
       bcrypt.compare(password, row.password_hash, (err, result) => {
         if (err) {
           console.error("Error al comparar contraseña:", err);
@@ -130,6 +136,9 @@ app.post("/api/login", (req, res) => {
             error: "Error del servidor"
           });
         }
+        
+        console.log("Resultado de bcrypt.compare:", result);
+        console.log("=== FIN DEBUG ===");
         
         if (result) {
           // Login correcto
