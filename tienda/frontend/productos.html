@@ -1200,21 +1200,550 @@
     /* -------------------------
        RESPONSIVE
     -------------------------- */
-    @media (max-width: 640px) {
+    
+    /* Menú Hamburguesa - Oculto en Desktop */
+    .mobile-menu-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 24px;
+      height: 18px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      height: 2px;
+      width: 100%;
+      background: var(--text-main);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-overlay {
+      display: none;
+    }
+
+    /* Desktop Navigation - Oculta en Móvil */
+    @media (max-width: 768px) {
+      /* -------------------------
+         MENÚ MÓVIL - DISEÑO COMPLETAMENTE DIFERENTE
+      -------------------------- */
+      
+      /* Ocultar navegación desktop */
+      #desktop-nav {
+        display: none;
+      }
+
+      /* Mostrar menú hamburguesa */
+      .mobile-menu-toggle {
+        display: flex;
+      }
+
+      /* Header adaptado para móvil */
+      .site-header {
+        backdrop-filter: blur(12px);
+        background: linear-gradient(
+          to bottom,
+          rgba(15, 23, 42, 0.98),
+          rgba(15, 23, 42, 0.85)
+        );
+      }
+
       .header-inner {
-        padding-inline: 1rem;
+        padding: 0.75rem 1rem;
+        height: auto;
+        min-height: 56px;
       }
+
+      .brand {
+        flex: 1;
+      }
+
+      .brand-logo {
+        width: 28px;
+        height: 28px;
+      }
+
+      .brand-title {
+        font-size: 0.95rem;
+      }
+
+      .brand-sub {
+        font-size: 0.72rem;
+      }
+
+      .cart-button span {
+        display: none; /* Ocultar texto "Carrito" en móvil */
+      }
+
+      .cart-button {
+        padding: 0.4rem 0.6rem;
+        min-width: auto;
+      }
+
+      /* Overlay del menú móvil */
+      .mobile-menu-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(2, 6, 23, 0.95);
+        backdrop-filter: blur(20px);
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .mobile-menu-overlay.open {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .mobile-menu-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+      }
+
+      .mobile-menu-close {
+        background: none;
+        border: none;
+        color: var(--text-main);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+      }
+
+      .mobile-menu-close:hover {
+        background: rgba(148, 163, 184, 0.1);
+      }
+
+      .mobile-nav {
+        padding: 1.5rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .mobile-nav-link {
+        background: none;
+        border: none;
+        color: var(--text-main);
+        font-size: 1.1rem;
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        text-align: left;
+      }
+
+      .mobile-nav-link.active {
+        background: rgba(249, 115, 22, 0.15);
+        color: #f97316;
+      }
+
+      .mobile-nav-link:hover {
+        background: rgba(148, 163, 184, 0.1);
+      }
+
+      .mobile-menu-paginas {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .mobile-menu-paginas a {
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+      }
+
+      .mobile-menu-paginas a:hover {
+        background: rgba(148, 163, 184, 0.1);
+        color: var(--text-main);
+      }
+
+      .mobile-cart-button {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(29, 78, 216, 0.15));
+        border: 1px solid rgba(249, 115, 22, 0.3);
+        border-radius: 12px;
+        color: var(--text-main);
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .mobile-cart-button:hover {
+        background: linear-gradient(135deg, rgba(249, 115, 22, 0.25), rgba(29, 78, 216, 0.25));
+        transform: translateY(-1px);
+      }
+
+      /* -------------------------
+         CONTENIDO MÓVIL
+      -------------------------- */
+
       main.site-main {
-        padding-inline: 1rem;
+        padding: 1rem 1rem 2rem;
       }
+
+      /* Hero adaptado */
+      .hero {
+        padding: 1.5rem 0;
+        text-align: center;
+      }
+
+      .hero-title-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+        text-align: center;
+      }
+
+      .hero-pill {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+      }
+
+      .hero-subtitle {
+        font-size: 0.9rem;
+        text-align: center;
+        line-height: 1.5;
+        max-width: 100%;
+      }
+
+      /* Controles adaptados */
       .controls {
         flex-direction: column;
-        align-items: stretch;
+        gap: 1rem;
+        padding: 1rem 0;
       }
+
+      .search-wrapper {
+        order: -1; /* Búsqueda primero */
+      }
+
+      .search-input {
+        font-size: 1rem;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        height: 48px;
+        border-radius: 12px;
+      }
+
+      .search-icon {
+        left: 0.75rem;
+        font-size: 1.1rem;
+      }
+
+      .select {
+        width: 100%;
+      }
+
+      .select select {
+        width: 100%;
+        font-size: 0.95rem;
+        padding: 0.75rem 2.5rem 0.75rem 1rem;
+        height: 48px;
+        border-radius: 12px;
+      }
+
       .pill-filter {
-        align-self: flex-start;
+        align-self: center;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 999px;
+        min-height: 40px;
+      }
+
+      /* Grid de productos - 1 o 2 columnas */
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .card {
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+      }
+
+      .card-image {
+        height: 140px;
+      }
+
+      .card-content {
+        padding: 1rem;
+      }
+
+      .card-title {
+        font-size: 0.95rem;
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
+      }
+
+      .card-price-row {
+        margin-bottom: 0.75rem;
+      }
+
+      .card-price {
+        font-size: 1.1rem;
+      }
+
+      .card-price-original {
+        font-size: 0.8rem;
+      }
+
+      .card-price-offer {
+        font-size: 0.9rem;
+      }
+
+      .card-stock {
+        font-size: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .card-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .qty-controls {
+        order: -1;
+        justify-content: center;
+      }
+
+      .qty-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+      }
+
+      .qty-value {
+        min-width: 32px;
+        font-size: 0.9rem;
+      }
+
+      .add-to-cart {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 10px;
+        min-height: 40px;
+      }
+
+      /* Modal adaptado */
+      .modal-glass {
+        grid-template-columns: 1fr;
+        max-width: 95vw;
+        max-height: 90vh;
+        margin: 1rem;
+        border-radius: 20px;
+      }
+
+      .modal-image-wrap {
+        height: 250px;
+      }
+
+      .modal-info {
+        padding: 1.5rem;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .modal-price {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+      }
+
+      .modal-desc {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .modal-tags {
+        margin-bottom: 1rem;
+      }
+
+      .modal-stock {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .qty-controls {
+        justify-content: center;
+      }
+
+      .add-to-cart {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+      }
+
+      /* Carrito lateral adaptado */
+      .cart-panel {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 20px 20px 0 0;
+      }
+
+      .cart-header {
+        padding: 1rem 1.5rem;
+      }
+
+      .cart-body {
+        padding: 0 1.5rem 1rem;
+      }
+
+      .cart-item {
+        padding: 0.75rem;
+        border-radius: 12px;
+      }
+
+      .cart-thumb {
+        width: 50px;
+        height: 50px;
+      }
+
+      .cart-name {
+        font-size: 0.9rem;
+      }
+
+      .cart-meta {
+        font-size: 0.8rem;
+      }
+
+      .qty-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+      }
+
+      .qty-value {
+        min-width: 28px;
+        font-size: 0.85rem;
+      }
+
+      .cart-footer {
+        padding: 1rem 1.5rem;
+      }
+
+      .cart-summary {
+        font-size: 0.95rem;
+      }
+
+      .cart-checkout {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        min-height: 44px;
+      }
+
+      /* Paginación adaptada */
+      .pagination {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 1.5rem 0;
+      }
+
+      .pagination button {
+        min-width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+      }
+
+      /* Footer adaptado */
+      .site-footer {
+        padding: 1rem;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+      }
+
+      .footer-links {
+        justify-content: center;
+      }
+
+      .footer-link {
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+      }
+
+      /* Banner adaptado */
+      .banner {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+      }
+
+      /* Empty states */
+      .empty, .error-msg {
+        font-size: 0.9rem;
+        padding: 2rem 1rem;
+        text-align: center;
       }
     }
+
+    /* Tablets - ajustes intermedios */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+      }
+      
+      .hero-title {
+        font-size: 2.5rem;
+      }
+    }
+
+    /* Large mobile - ajustes finos */
+    @media (max-width: 480px) {
+      .grid {
+        grid-template-columns: 1fr; /* 1 columna en pantallas muy pequeñas */
+      }
+      
+      .hero-title {
+        font-size: 1.75rem;
+      }
+      
+      .card-image {
+        height: 180px; /* Imágenes más grandes en 1 columna */
+      }
+    }
+
   </style>
 </head>
 
@@ -1226,23 +1755,70 @@
         <div class="brand">
           <div class="brand-logo"></div>
           <div class="brand-text">
-            <div class="brand-title">Mini CMS Tienda</div>
-            <div class="brand-sub">Catálogo público de productos</div>
+            <div class="brand-title">Tienda</div>
+            <div class="brand-sub">Productos Premium</div>
           </div>
         </div>
 
-        <nav class="site-nav">
+        <!-- Menú Hamburguesa para Móvil -->
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Abrir menú">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <!-- Navegación Desktop -->
+        <nav class="site-nav" id="desktop-nav">
           <button class="nav-link active" type="button">Productos</button>
           <div id="menu-paginas" class="menu-paginas"></div>
         </nav>
 
         <div class="header-actions">
-          <button class="cart-button" id="cart-button" type="button">
-            <span class="cart-icon">🛒</span>
+          <button class="cart-button" id="cart-button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 2L6 9H3l3 9h12l3-9h-3l-3-7z"/>
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="15" cy="21" r="1"/>
+            </svg>
             <span>Carrito</span>
             <span class="cart-count" id="cart-count">0</span>
           </button>
         </div>
+      </div>
+
+      <!-- Menú Móvil (Overlay) -->
+      <div class="mobile-menu-overlay" id="mobile-menu-overlay">
+        <div class="mobile-menu-header">
+          <div class="brand">
+            <div class="brand-logo"></div>
+            <div class="brand-text">
+              <div class="brand-title">Tienda</div>
+              <div class="brand-sub">Menú</div>
+            </div>
+          </div>
+          <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Cerrar menú">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        
+        <nav class="mobile-nav">
+          <button class="mobile-nav-link active" type="button">Productos</button>
+          <div class="mobile-menu-paginas" id="mobile-menu-paginas"></div>
+          
+          <!-- Botón de carrito en menú móvil -->
+          <button class="mobile-cart-button" id="mobile-cart-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 2L6 9H3l3 9h12l3-9h-3l-3-7z"/>
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="15" cy="21" r="1"/>
+            </svg>
+            <span>Ver Carrito</span>
+            <span class="cart-count" id="mobile-cart-count">0</span>
+          </button>
+        </nav>
       </div>
     </header>
 
@@ -1387,6 +1963,7 @@
     // -------------------------------
     document.addEventListener("DOMContentLoaded", () => {
       setupUIEvents();
+      setupMobileMenu(); // Inicializar menú móvil
       fetchProducts();
       loadBanner();
       loadMenuPages();
@@ -1426,21 +2003,81 @@
         const res = await fetch("/api/paginas");
         const pages = await res.json();
 
+        // Cargar páginas en menú desktop
         const container = document.getElementById("menu-paginas");
         container.innerHTML = "";
+
+        // Cargar páginas en menú móvil
+        const mobileContainer = document.getElementById("mobile-menu-paginas");
+        mobileContainer.innerHTML = "";
 
         pages
           .filter(p => p.visible == 1)
           .forEach(p => {
+            // Desktop menu
             const link = document.createElement("a");
             link.href = `/tienda/pagina.html?p=${p.slug}`;
             link.textContent = p.titulo;
             container.appendChild(link);
+
+            // Mobile menu
+            const mobileLink = document.createElement("a");
+            mobileLink.href = `/tienda/pagina.html?p=${p.slug}`;
+            mobileLink.textContent = p.titulo;
+            mobileContainer.appendChild(mobileLink);
           });
 
       } catch (err) {
         console.error("Error cargando páginas:", err);
       }
+    }
+
+    // -------------------------------
+    // MENÚ MÓVIL
+    // -------------------------------
+    function setupMobileMenu() {
+      const mobileMenuToggle = document.getElementById("mobile-menu-toggle");
+      const mobileMenuOverlay = document.getElementById("mobile-menu-overlay");
+      const mobileMenuClose = document.getElementById("mobile-menu-close");
+      const mobileCartButton = document.getElementById("mobile-cart-button");
+
+      // Abrir menú móvil
+      mobileMenuToggle.addEventListener("click", () => {
+        mobileMenuOverlay.classList.add("open");
+        document.body.style.overflow = "hidden"; // Prevenir scroll
+      });
+
+      // Cerrar menú móvil
+      mobileMenuClose.addEventListener("click", () => {
+        mobileMenuOverlay.classList.remove("open");
+        document.body.style.overflow = ""; // Restaurar scroll
+      });
+
+      // Cerrar menú al hacer clic fuera
+      mobileMenuOverlay.addEventListener("click", (e) => {
+        if (e.target === mobileMenuOverlay) {
+          mobileMenuOverlay.classList.remove("open");
+          document.body.style.overflow = "";
+        }
+      });
+
+      // Botón de carrito en menú móvil
+      mobileCartButton.addEventListener("click", () => {
+        mobileMenuOverlay.classList.remove("open");
+        document.body.style.overflow = "";
+        // Abrir carrito (misma función que el botón principal)
+        document.getElementById("cart-panel").classList.add("visible");
+      });
+
+      // Navegación móvil
+      const mobileNavLinks = document.querySelectorAll(".mobile-nav-link");
+      mobileNavLinks.forEach(link => {
+        link.addEventListener("click", () => {
+          // Cerrar menú después de navegar
+          mobileMenuOverlay.classList.remove("open");
+          document.body.style.overflow = "";
+        });
+      });
     }
 
     function setupUIEvents() {
