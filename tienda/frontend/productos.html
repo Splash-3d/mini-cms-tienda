@@ -2677,6 +2677,7 @@
 
       renderProducts();
       updateHeroCount();
+      updateFiltersCount(); // Actualizar contador de filtros
     }
 
     // -------------------------------
@@ -2828,6 +2829,27 @@
       const heroCount = document.getElementById("hero-count");
       const total = filteredProducts.length;
       heroCount.textContent = `${total} producto${total !== 1 ? "s" : ""} visible${total !== 1 ? "s" : ""}`;
+    }
+
+    function updateFiltersCount() {
+      const filtersCount = document.getElementById("filters-count");
+      if (!filtersCount) return;
+
+      // Leer valores reales de los filtros
+      const search = document.getElementById("search-input").value.trim().toLowerCase();
+      const cat = document.getElementById("filter-category").value;
+      const subcat = document.getElementById("filter-subcategory").value;
+      const soloDisponibles = document.getElementById("pill-disponibles").classList.contains("active");
+
+      // Contar filtros activos
+      let count = 0;
+      if (search) count++; // Búsqueda activa
+      if (cat) count++; // Categoría seleccionada
+      if (subcat) count++; // Subcategoría seleccionada
+      if (soloDisponibles) count++; // Solo disponibles activo
+
+      // Actualizar contador
+      filtersCount.textContent = count;
     }
 
     // -------------------------------
