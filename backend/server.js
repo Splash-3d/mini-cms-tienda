@@ -1083,10 +1083,35 @@ function createDefaultData(database) {
   
   // Crear usuario admin por defecto
   dbToUse.get("SELECT COUNT(*) as count FROM usuarios", (err, row) => {
-    if (!err && row.count === 0) {
+    if (err) {
+      console.error("Error verificando usuarios:", err);
+      return;
+    }
+    
+    console.log("Total usuarios existentes:", row.count);
+    
+    if (row.count === 0) {
       const passwordHash = bcrypt.hashSync("admin123", 10);
-      dbToUse.run("INSERT INTO usuarios (usuario, password_hash) VALUES (?, ?)", ["admin", passwordHash]);
-      console.log("Usuario admin creado");
+      console.log("Hash generado para admin:", passwordHash.substring(0, 20) + "...");
+      
+      dbToUse.run("INSERT INTO usuarios (usuario, password_hash) VALUES (?, ?)", ["admin", passwordHash], function(err) {
+        if (err) {
+          console.error("Error creando usuario admin:", err);
+        } else {
+          console.log("Usuario admin creado con ID:", this.lastID);
+          
+          // Verificar que se creó correctamente
+          dbToUse.get("SELECT * FROM usuarios WHERE usuario = ?", ["admin"], (err, row) => {
+            if (err) {
+              console.error("Error verificando usuario creado:", err);
+            } else {
+              console.log("Usuario verificado:", row.usuario, "ID:", row.id);
+            }
+          });
+        }
+      });
+    } else {
+      console.log("Usuarios ya existen, omitiendo creación de admin");
     }
   });
 
