@@ -7,14 +7,11 @@ const bcrypt = require("bcrypt");
 
 const app = express();
 
-// Middleware
+// Middleware para JSON y form data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Servir archivos estáticos
-app.use(express.static(path.join(__dirname, "../tienda")));
-
-// Configuración de multer
+// Configuración de multer para subir imágenes
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadsDir = path.join(__dirname, "uploads");
@@ -39,27 +36,22 @@ const upload = multer({
     }
   },
   limits: {
-    fileSize: 5 * 1024 * 1024
+    fileSize: 5 * 1024 * 1024 // 5MB límite
   }
 });
 
-// Base de datos
-let db;
+// Base de datos en memoria
+const db = new sqlite3.Database(':memory:', (err) => {
+  if (err) {
+    console.error("Error creando base de datos:", err);
+  } else {
+    console.log("Base de datos en memoria creada");
+    initializeDatabase();
+  }
+});
 
 function initializeDatabase() {
-  db = new sqlite3.Database(':memory:', (err) => {
-    if (err) {
-      console.error("Error creando base de datos:", err);
-      process.exit(1);
-    }
-    console.log("Base de datos en memoria creada");
-    
-    // Crear tablas en secuencia
-    createTables();
-  });
-}
-
-function createTables() {
+  // Crear tablas
   const tables = [
     `CREATE TABLE IF NOT EXISTS usuarios (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -111,9 +103,8 @@ function createTables() {
         console.error(`Error creando tabla ${index + 1}:`, err);
       } else {
         tablesCreated++;
-        console.log(`Tabla ${index + 1} creada`);
         if (tablesCreated === tables.length) {
-          console.log("Todas las tablas creadas");
+          console.log("Todas las tablas creadas correctamente");
           createDefaultData();
         }
       }
@@ -122,28 +113,13 @@ function createTables() {
 }
 
 function createDefaultData() {
-  console.log("Creando datos por defecto...");
-  
   // Crear usuario admin
   const passwordHash = bcrypt.hashSync("admin123", 10);
-  console.log("Hash generado:", passwordHash.substring(0, 20) + "...");
-  
   db.run("INSERT INTO usuarios (usuario, password_hash) VALUES (?, ?)", ["admin", passwordHash], function(err) {
     if (err) {
-      console.error("Error creando admin:", err);
+      console.error("Error creando usuario admin:", err);
     } else {
-      console.log("Usuario admin creado con ID:", this.lastID);
-      
-      // Verificar inmediatamente
-      db.get("SELECT * FROM usuarios WHERE usuario = ?", ["admin"], (err, row) => {
-        if (err) {
-          console.error("Error verificando admin:", err);
-        } else if (row) {
-          console.log("✅ Admin verificado - ID:", row.id, "Usuario:", row.usuario);
-        } else {
-          console.log("❌ Admin no encontrado después de crear");
-        }
-      });
+      console.log("Usuario admin creado");
     }
   });
 
@@ -153,18 +129,17 @@ function createDefaultData() {
     if (err) {
       console.error("Error creando banner:", err);
     } else {
-      console.log("Banner creado con ID:", this.lastID);
+      console.log("Banner por defecto creado");
     }
   });
 }
 
+// Servir archivos estáticos
+app.use(express.static(path.join(__dirname, "../tienda")));
+
 // Rutas de autenticación
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
-  
-  console.log("=== LOGIN INTENTO ===");
-  console.log("Usuario:", username);
-  console.log("Contraseña:", password);
   
   if (!username || !password) {
     return res.status(400).json({ success: false, error: "Usuario y contraseña son obligatorios" });
@@ -172,14 +147,7 @@ app.post("/api/login", (req, res) => {
   
   db.get("SELECT * FROM usuarios WHERE usuario = ?", [username], (err, row) => {
     if (err) {
-      console.error("Error en consulta:", err);
       return res.status(500).json({ success: false, error: "Error del servidor" });
-    }
-    
-    console.log("Usuario encontrado:", row ? "SÍ" : "NO");
-    if (row) {
-      console.log("ID:", row.id, "Usuario:", row.usuario);
-      console.log("Hash BD:", row.password_hash.substring(0, 20) + "...");
     }
     
     if (!row) {
@@ -188,12 +156,8 @@ app.post("/api/login", (req, res) => {
     
     bcrypt.compare(password, row.password_hash, (err, result) => {
       if (err) {
-        console.error("Error bcrypt:", err);
         return res.status(500).json({ success: false, error: "Error del servidor" });
       }
-      
-      console.log("Resultado bcrypt:", result);
-      console.log("=== FIN LOGIN ===");
       
       if (result) {
         res.json({
@@ -205,16 +169,6 @@ app.post("/api/login", (req, res) => {
         res.status(401).json({ success: false, error: "Contraseña incorrecta" });
       }
     });
-  });
-});
-
-// Endpoint debug
-app.get("/api/debug/users", (req, res) => {
-  db.all("SELECT id, usuario, creado_en FROM usuarios", (err, rows) => {
-    if (err) {
-      return res.status(500).json({ success: false, error: "Error del servidor" });
-    }
-    res.json({ success: true, usuarios: rows });
   });
 });
 
@@ -254,6 +208,44 @@ app.post("/api/productos", upload.single('imagen'), (req, res) => {
       });
     }
   );
+});
+
+app.put("/api/productos/:id", upload.single('imagen'), (req, res) => {
+  const id = parseInt(req.params.id);
+  const { nombre, precio, stock, categoria, subcategoria, en_oferta, precio_oferta, disponible } = req.body;
+  
+  let imagenFinal = req.file ? `/uploads/${req.file.filename}` : req.body.imagenActual;
+  
+  db.run(
+    `UPDATE productos 
+     SET nombre = ?, precio = ?, stock = ?, categoria = ?, subcategoria = ?, 
+         en_oferta = ?, precio_oferta = ?, imagen = COALESCE(?, imagen)
+     WHERE id = ?`,
+    [nombre, parseFloat(precio), parseInt(stock || 0), categoria, subcategoria, en_oferta === '1' ? 1 : 0, precio_oferta || null, imagenFinal, id],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ success: false, error: "Error del servidor" });
+      }
+      
+      db.get("SELECT * FROM productos WHERE id = ?", [id], (err, row) => {
+        if (err) {
+          return res.status(500).json({ success: false, error: "Error del servidor" });
+        }
+        res.json({ success: true, producto: row });
+      });
+    }
+  );
+});
+
+app.delete("/api/productos/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  
+  db.run("DELETE FROM productos WHERE id = ?", [id], function(err) {
+    if (err) {
+      return res.status(500).json({ success: false, error: "Error del servidor" });
+    }
+    res.json({ success: true });
+  });
 });
 
 // Rutas de banner
@@ -344,9 +336,15 @@ app.get("/admin/login", (req, res) => {
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
-initializeDatabase();
-
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
-  console.log("Login: admin / admin123");
+  console.log("API endpoints disponibles:");
+  console.log("- POST /api/login");
+  console.log("- GET /api/banner");
+  console.log("- GET /api/productos");
+  console.log("- POST /api/productos");
+  console.log("- PUT /api/productos/:id");
+  console.log("- DELETE /api/productos/:id");
+  console.log("- GET /api/paginas");
+  console.log("- GET /api/config");
 });
