@@ -146,16 +146,38 @@ function checkExistingData(database) {
   
   // Verificar si existe usuario admin, sino crearlo
   dbToUse.get("SELECT COUNT(*) as count FROM usuarios", (err, row) => {
-    if (!err && row.count === 0) {
+    if (err) {
+      console.error("Error verificando usuarios:", err);
+      return;
+    }
+    
+    console.log("Total usuarios existentes:", row.count);
+    
+    if (row.count === 0) {
       console.log("No hay usuarios, creando admin por defecto");
       const passwordHash = bcrypt.hashSync("admin123", 10);
-      dbToUse.run("INSERT INTO usuarios (usuario, password_hash) VALUES (?, ?)", ["admin", passwordHash], (err) => {
-        if (!err) {
-          console.log("✅ Usuario admin creado");
+      console.log("Hash generado para admin:", passwordHash.substring(0, 20) + "...");
+      
+      dbToUse.run("INSERT INTO usuarios (usuario, password_hash) VALUES (?, ?)", ["admin", passwordHash], function(err) {
+        if (err) {
+          console.error("Error creando usuario admin:", err);
+        } else {
+          console.log("✅ Usuario admin creado con ID:", this.lastID);
+          
+          // Verificar que se creó correctamente
+          dbToUse.get("SELECT * FROM usuarios WHERE usuario = ?", ["admin"], (err, row) => {
+            if (err) {
+              console.error("Error verificando usuario creado:", err);
+            } else if (row) {
+              console.log("✅ Admin verificado - ID:", row.id, "Usuario:", row.usuario);
+            } else {
+              console.log("❌ Admin no encontrado después de crear");
+            }
+          });
         }
       });
     } else {
-      console.log("✅ Usuarios existentes en la base de datos");
+      console.log("✅ Usuarios ya existen en la base de datos");
     }
   });
 
@@ -579,6 +601,32 @@ app.get("/api/test", (req, res) => {
     message: "Servidor funcionando correctamente",
     database: dbPath,
     timestamp: new Date().toISOString()
+  });
+});
+
+// Ruta para verificar usuarios en la base de datos
+app.get("/api/check-users", (req, res) => {
+  console.log("=== DEBUG VERIFICAR USUARIOS ===");
+  console.log("Base de datos actual:", dbPath);
+  
+  db.all("SELECT * FROM usuarios", (err, rows) => {
+    if (err) {
+      console.error("❌ Error al verificar usuarios:", err);
+      return res.status(500).json({ success: false, error: "Error del servidor" });
+    }
+    
+    console.log("Total usuarios encontrados:", rows.length);
+    rows.forEach(user => {
+      console.log("Usuario:", user.usuario, "ID:", user.id);
+    });
+    console.log("=== FIN DEBUG VERIFICAR USUARIOS ===");
+    
+    res.json({ 
+      success: true, 
+      total: rows.length,
+      users: rows.map(u => ({ id: u.id, usuario: u.usuario })),
+      database: dbPath
+    });
   });
 });
 
