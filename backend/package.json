@@ -1,9 +1,9 @@
 {
   "name": "mini-cms-tienda",
   "version": "1.0.0",
-  "main": "server-original.js",
+  "main": "server-restored.js",
   "scripts": {
-    "start": "node server-original.js"
+    "start": "node server-restored.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
