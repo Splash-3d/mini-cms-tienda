@@ -691,6 +691,16 @@
   <script>
     const API_BASE = "/api";
     
+    // Obtener token de la URL y guardarlo en memoria
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    
+    if (urlToken) {
+      window.adminToken = urlToken;
+      // Limpiar URL para no mostrar el token en la barra de direcciones
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
     // Verificar token en memoria, si no existe redirigir al login
     const token = window.adminToken;
     if (!token) {

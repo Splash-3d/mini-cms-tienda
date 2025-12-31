@@ -219,7 +219,7 @@
         showToast("Login correcto, entrando…", "success");
 
         setTimeout(() => {
-          window.location.href = "productos.html";
+          window.location.href = `productos.html?token=${encodeURIComponent(data.token)}`;
         }, 800);
 
       } catch {
