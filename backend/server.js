@@ -998,31 +998,46 @@ db.run(`
   }
 });
 
-// Insertar configuración por defecto
+// Insertar configuración por defecto (solo si la tabla está vacía)
 function insertDefaultConfig() {
-  const defaultConfig = {
-    site_name: "Tienda",
-    site_subtitle: "Productos Premium", 
-    site_description: "Mini CMS Tienda · Frontend público",
-    hero_title: "Catálogo de Productos",
-    loading_text: "Cargando productos…",
-    empty_products_text: "No hay productos que coincidan con los filtros.",
-    error_products_text: "Error al cargar los productos. Revisa el servidor.",
-    empty_cart_text: "Tu carrito está vacío.",
-    checkout_button_text: "Finalizar (demo)",
-    product_placeholder_name: "Producto sin nombre"
-  };
+  // Primero verificar si ya hay configuración
+  db.get("SELECT COUNT(*) as count FROM site_config", (err, row) => {
+    if (err) {
+      console.error("Error verificando configuración existente:", err);
+      return;
+    }
+    
+    // Solo insertar valores por defecto si la tabla está completamente vacía
+    if (row.count === 0) {
+      const defaultConfig = {
+        site_name: "Tienda",
+        site_subtitle: "Productos Premium", 
+        site_description: "Mini CMS Tienda · Frontend público",
+        hero_title: "Catálogo de Productos",
+        loading_text: "Cargando productos…",
+        empty_products_text: "No hay productos que coincidan con los filtros.",
+        error_products_text: "Error al cargar los productos. Revisa el servidor.",
+        empty_cart_text: "Tu carrito está vacío.",
+        checkout_button_text: "Finalizar (demo)",
+        product_placeholder_name: "Producto sin nombre"
+      };
 
-  Object.entries(defaultConfig).forEach(([key, value]) => {
-    db.run(
-      "INSERT OR IGNORE INTO site_config (key, value) VALUES (?, ?)",
-      [key, value],
-      (err) => {
-        if (err) {
-          console.error(`Error insertando config ${key}:`, err);
-        }
-      }
-    );
+      Object.entries(defaultConfig).forEach(([key, value]) => {
+        db.run(
+          "INSERT INTO site_config (key, value) VALUES (?, ?)",
+          [key, value],
+          (err) => {
+            if (err) {
+              console.error(`Error insertando config ${key}:`, err);
+            } else {
+              console.log(`Configuración por defecto insertada: ${key}`);
+            }
+          }
+        );
+      });
+    } else {
+      console.log("Configuración existente detectada, omitiendo inserción de valores por defecto");
+    }
   });
 }
 
