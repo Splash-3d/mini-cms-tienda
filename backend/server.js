@@ -69,13 +69,34 @@ const dbPath = process.env.RAILWAY_ENVIRONMENT === 'production'
 function initializeDatabaseConnection() {
   console.log(`Intentando conectar a base de datos en: ${dbPath}`);
   
+  // En Railway, asegurar que el directorio /data exista
+  if (process.env.RAILWAY_ENVIRONMENT === 'production') {
+    const dataDir = '/data';
+    try {
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+        console.log(`✅ Directorio ${dataDir} creado`);
+      }
+    } catch (err) {
+      console.error(`Error creando directorio ${dataDir}:`, err);
+    }
+  }
+  
+  // Asegurar que el directorio exista para desarrollo local
+  if (process.env.RAILWAY_ENVIRONMENT !== 'production') {
+    const uploadsDir = path.join(__dirname, "uploads");
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+  }
+  
   const database = new sqlite3.Database(dbPath, (err) => {
     if (err) {
       console.error("Error abriendo base de datos:", err);
-      console.log("Usando base de datos en memoria como fallback");
+      console.log("❌ No se puede usar base de datos persistente, usando memoria temporal");
       // Fallback a base de datos en memoria
       db = new sqlite3.Database(':memory:');
-      console.log("Base de datos en memoria inicializada");
+      console.log("Base de datos en memoria inicializada (fallback)");
     } else {
       db = database;
       console.log(`✅ Base de datos SQLite persistente en: ${dbPath}`);
@@ -84,14 +105,6 @@ function initializeDatabaseConnection() {
     // Inicializar tablas y datos por defecto
     initializeDatabase(db);
   });
-}
-
-// Asegurar que el directorio exista para desarrollo local
-if (process.env.RAILWAY_ENVIRONMENT !== 'production') {
-  const uploadsDir = path.join(__dirname, "uploads");
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
 }
 
 // Inicializar la conexión a la base de datos

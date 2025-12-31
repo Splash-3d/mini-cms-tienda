@@ -4,6 +4,8 @@ builder = "NIXPACKS"
 [deploy]
 startCommand = "cd backend && npm install && node server.js"
 
+# Volumen persistente para base de datos SQLite
 [[mounts]]
 source = "/data"
 destination = "/data"
+mountType = "volume"
