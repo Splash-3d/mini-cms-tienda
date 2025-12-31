@@ -43,16 +43,20 @@ const upload = multer({
   }
 });
 
-// Base de datos persistente
-const db = new sqlite3.Database('/data/tienda.db', (err) => {
+// Base de datos - primero intentar persistente, luego local, luego memoria
+const dbPath = process.env.RAILWAY_ENVIRONMENT === 'production' 
+  ? '/data/tienda.db'  // Railway - persistente
+  : path.join(__dirname, "tienda.db"); // Local - tienda.db existente
+
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error("Error abriendo base de datos persistente:", err);
-    console.log("❌ No se puede usar /data/tienda.db, usando memoria temporal");
-    // Fallback a memoria si no se puede usar la ruta persistente
+    console.error("Error abriendo base de datos:", err);
+    console.log("❌ No se puede usar", dbPath, ", usando memoria temporal");
+    // Fallback a memoria si no se puede usar ninguna ruta
     const memoryDb = new sqlite3.Database(':memory:');
     initializeDatabase(memoryDb);
   } else {
-    console.log("✅ Base de datos persistente conectada: /data/tienda.db");
+    console.log("✅ Base de datos conectada:", dbPath);
     initializeDatabase(db);
   }
 });
