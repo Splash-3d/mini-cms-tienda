@@ -57,7 +57,22 @@ const upload = multer({
 // CONEXIÓN A BASE DE DATOS SQLITE
 // ================================
 
-const db = new sqlite3.Database(path.join(__dirname, "uploads", "tienda.db"));
+// Usar base de datos persistente en Railway
+const dbPath = process.env.RAILWAY_ENVIRONMENT === 'production' 
+  ? '/mnt/data/tienda.db'  // Almacenamiento persistente en Railway
+  : path.join(__dirname, "uploads", "tienda.db"); // Local development
+
+const db = new sqlite3.Database(dbPath);
+
+// Asegurar que el directorio exista
+if (process.env.RAILWAY_ENVIRONMENT !== 'production') {
+  const uploadsDir = path.join(__dirname, "uploads");
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+}
+
+console.log(`Base de datos SQLite en: ${dbPath}`);
 
 // ================================
 // RUTA PARA SUBIR IMÁGENES
@@ -977,10 +992,140 @@ app.delete("/api/usuarios/:id", (req, res) => {
 });
 
 // ================================
-// CREAR TABLA DE CONFIGURACIÓN
+// CREAR TABLAS SI NO EXISTEN
 // ================================
 
-// Crear tabla de configuración si no existe
+// Crear tabla de usuarios
+db.run(`
+  CREATE TABLE IF NOT EXISTS usuarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`, (err) => {
+  if (err) {
+    console.error("Error creando tabla usuarios:", err);
+  } else {
+    console.log("Tabla usuarios creada o verificada correctamente");
+    // Crear usuario admin por defecto si no existe
+    createDefaultAdmin();
+  }
+});
+
+// Crear tabla de banner
+db.run(`
+  CREATE TABLE IF NOT EXISTS banner (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    texto TEXT NOT NULL DEFAULT '',
+    color_fondo TEXT NOT NULL DEFAULT '#1d4ed8',
+    color_texto TEXT NOT NULL DEFAULT '#ffffff',
+    visible INTEGER NOT NULL DEFAULT 1
+  )
+`, (err) => {
+  if (err) {
+    console.error("Error creando tabla banner:", err);
+  } else {
+    console.log("Tabla banner creada o verificada correctamente");
+    // Crear banner por defecto si no existe
+    createDefaultBanner();
+  }
+});
+
+// Crear tabla de productos
+db.run(`
+  CREATE TABLE IF NOT EXISTS productos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    precio REAL NOT NULL,
+    stock INTEGER NOT NULL DEFAULT 0,
+    imagen TEXT DEFAULT '/uploads/default.jpg',
+    categoria TEXT,
+    subcategoria TEXT,
+    en_oferta INTEGER NOT NULL DEFAULT 0,
+    precio_oferta REAL,
+    disponible INTEGER NOT NULL DEFAULT 1,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`, (err) => {
+  if (err) {
+    console.error("Error creando tabla productos:", err);
+  } else {
+    console.log("Tabla productos creada o verificada correctamente");
+  }
+});
+
+// Crear tabla de páginas
+db.run(`
+  CREATE TABLE IF NOT EXISTS paginas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    titulo TEXT NOT NULL,
+    contenido TEXT DEFAULT '',
+    visible INTEGER NOT NULL DEFAULT 1,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`, (err) => {
+  if (err) {
+    console.error("Error creando tabla paginas:", err);
+  } else {
+    console.log("Tabla paginas creada o verificada correctamente");
+  }
+});
+
+// Crear tabla de bloques de páginas
+db.run(`
+  CREATE TABLE IF NOT EXISTS pagina_bloques (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pagina_slug TEXT NOT NULL,
+    tipo TEXT NOT NULL,
+    contenido TEXT DEFAULT '',
+    orden INTEGER NOT NULL DEFAULT 0,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (pagina_slug) REFERENCES paginas(slug) ON DELETE CASCADE
+  )
+`, (err) => {
+  if (err) {
+    console.error("Error creando tabla pagina_bloques:", err);
+  } else {
+    console.log("Tabla pagina_bloques creada o verificada correctamente");
+  }
+});
+
+// Crear tabla de categorías
+db.run(`
+  CREATE TABLE IF NOT EXISTS categorias (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT UNIQUE NOT NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`, (err) => {
+  if (err) {
+    console.error("Error creando tabla categorias:", err);
+  } else {
+    console.log("Tabla categorias creada o verificada correctamente");
+  }
+});
+
+// Crear tabla de subcategorías
+db.run(`
+  CREATE TABLE IF NOT EXISTS subcategorias (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT UNIQUE NOT NULL,
+    categoria_id INTEGER,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+  )
+`, (err) => {
+  if (err) {
+    console.error("Error creando tabla subcategorias:", err);
+  } else {
+    console.log("Tabla subcategorias creada o verificada correctamente");
+  }
+});
+
+// Crear tabla de configuración
 db.run(`
   CREATE TABLE IF NOT EXISTS site_config (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -997,6 +1142,59 @@ db.run(`
     insertDefaultConfig();
   }
 });
+
+// ================================
+// FUNCIONES DE CREACIÓN POR DEFECTO
+// ================================
+
+// Crear usuario admin por defecto
+function createDefaultAdmin() {
+  db.get("SELECT COUNT(*) as count FROM usuarios", (err, row) => {
+    if (err) {
+      console.error("Error verificando usuarios:", err);
+      return;
+    }
+    
+    if (row.count === 0) {
+      const passwordHash = bcrypt.hashSync("admin123", 10);
+      db.run(
+        "INSERT INTO usuarios (usuario, password_hash) VALUES (?, ?)",
+        ["admin", passwordHash],
+        (err) => {
+          if (err) {
+            console.error("Error creando usuario admin:", err);
+          } else {
+            console.log("Usuario admin creado por defecto");
+          }
+        }
+      );
+    }
+  });
+}
+
+// Crear banner por defecto
+function createDefaultBanner() {
+  db.get("SELECT COUNT(*) as count FROM banner", (err, row) => {
+    if (err) {
+      console.error("Error verificando banner:", err);
+      return;
+    }
+    
+    if (row.count === 0) {
+      db.run(
+        "INSERT INTO banner (texto, color_fondo, color_texto, visible) VALUES (?, ?, ?, ?)",
+        ["¡Bienvenido a nuestra tienda!", "#1d4ed8", "#ffffff", 1],
+        (err) => {
+          if (err) {
+            console.error("Error creando banner por defecto:", err);
+          } else {
+            console.log("Banner por defecto creado");
+          }
+        }
+      );
+    }
+  });
+}
 
 // Insertar configuración por defecto (solo si la tabla está vacía)
 function insertDefaultConfig() {
