@@ -539,6 +539,18 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../tienda/frontend/pagina.html"));
 });
 
+app.get("/tienda/productos.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "../tienda/frontend/productos.html"));
+});
+
+app.get("/tienda/admin/login.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "../tienda/admin/login.html"));
+});
+
+app.get("/tienda/admin/productos.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "../tienda/admin/productos.html"));
+});
+
 app.get("/admin/productos", (req, res) => {
   res.sendFile(path.join(__dirname, "../tienda/admin/productos.html"));
 });
