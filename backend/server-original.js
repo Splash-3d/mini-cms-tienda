@@ -48,15 +48,18 @@ const dbPath = process.env.RAILWAY_ENVIRONMENT === 'production'
   ? '/data/tienda.db'  // Railway - persistente
   : path.join(__dirname, "tienda.db"); // Local - tienda.db existente
 
-const db = new sqlite3.Database(dbPath, (err) => {
+let db;
+
+const databaseConnection = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error("Error abriendo base de datos:", err);
     console.log("❌ No se puede usar", dbPath, ", usando memoria temporal");
     // Fallback a memoria si no se puede usar ninguna ruta
-    const memoryDb = new sqlite3.Database(':memory:');
-    initializeDatabase(memoryDb);
+    db = new sqlite3.Database(':memory:');
+    initializeDatabase(db);
   } else {
     console.log("✅ Base de datos conectada:", dbPath);
+    db = databaseConnection;
     initializeDatabase(db);
   }
 });
@@ -172,31 +175,51 @@ function checkExistingData(database) {
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   
+  console.log("=== DEBUG LOGIN ===");
+  console.log("Usuario recibido:", username);
+  console.log("Contraseña recibida:", password);
+  console.log("Base de datos actual:", dbPath);
+  
   if (!username || !password) {
+    console.log("❌ Usuario o contraseña vacíos");
     return res.status(400).json({ success: false, error: "Usuario y contraseña son obligatorios" });
   }
   
   db.get("SELECT * FROM usuarios WHERE usuario = ?", [username], (err, row) => {
     if (err) {
+      console.error("❌ Error en consulta de usuario:", err);
       return res.status(500).json({ success: false, error: "Error del servidor" });
     }
     
+    console.log("Usuario encontrado en BD:", row ? "SÍ" : "NO");
+    if (row) {
+      console.log("ID usuario:", row.id);
+      console.log("Hash en BD:", row.password_hash.substring(0, 20) + "...");
+    }
+    
     if (!row) {
+      console.log("❌ Usuario no encontrado");
       return res.status(401).json({ success: false, error: "Usuario no encontrado" });
     }
     
     bcrypt.compare(password, row.password_hash, (err, result) => {
       if (err) {
+        console.error("❌ Error al comparar contraseña:", err);
         return res.status(500).json({ success: false, error: "Error del servidor" });
       }
       
+      console.log("Resultado de bcrypt.compare:", result);
+      console.log("=== FIN DEBUG LOGIN ===");
+      
       if (result) {
+        console.log("✅ Login exitoso para:", username);
         res.json({
           success: true,
           token: "token-de-prueba-admin",
           user: { id: row.id, username: row.usuario }
         });
       } else {
+        console.log("❌ Contraseña incorrecta");
         res.status(401).json({ success: false, error: "Contraseña incorrecta" });
       }
     });
@@ -205,10 +228,21 @@ app.post("/api/login", (req, res) => {
 
 // Rutas de productos
 app.get("/api/productos", (req, res) => {
+  console.log("=== DEBUG PRODUCTOS ===");
+  console.log("Base de datos actual:", dbPath);
+  
   db.all("SELECT * FROM productos ORDER BY creado_en DESC", (err, rows) => {
     if (err) {
+      console.error("❌ Error al obtener productos:", err);
       return res.status(500).json({ success: false, error: "Error del servidor" });
     }
+    
+    console.log("Total productos encontrados:", rows.length);
+    if (rows.length > 0) {
+      console.log("Primer producto:", rows[0].nombre);
+    }
+    console.log("=== FIN DEBUG PRODUCTOS ===");
+    
     res.json(rows);
   });
 });
@@ -536,6 +570,16 @@ app.post("/api/config", async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, error: "Error del servidor" });
   }
+});
+
+// Ruta de prueba para verificar que el servidor funciona
+app.get("/api/test", (req, res) => {
+  res.json({ 
+    success: true, 
+    message: "Servidor funcionando correctamente",
+    database: dbPath,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Rutas estáticas
