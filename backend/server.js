@@ -60,13 +60,15 @@ const upload = multer({
 // Variable global para la base de datos
 let db;
 
-// Usar base de datos en memoria para Railway (temporal solución)
+// Usar base de datos persistente en Railway
 const dbPath = process.env.RAILWAY_ENVIRONMENT === 'production' 
-  ? ':memory:'  // Base de datos en memoria para Railway
+  ? '/data/tienda.db'  // Volumen persistente en Railway
   : path.join(__dirname, "uploads", "tienda.db"); // Local development
 
 // Función para inicializar la base de datos
 function initializeDatabaseConnection() {
+  console.log(`Intentando conectar a base de datos en: ${dbPath}`);
+  
   const database = new sqlite3.Database(dbPath, (err) => {
     if (err) {
       console.error("Error abriendo base de datos:", err);
@@ -76,7 +78,7 @@ function initializeDatabaseConnection() {
       console.log("Base de datos en memoria inicializada");
     } else {
       db = database;
-      console.log(`Base de datos SQLite en: ${dbPath}`);
+      console.log(`✅ Base de datos SQLite persistente en: ${dbPath}`);
     }
     
     // Inicializar tablas y datos por defecto
