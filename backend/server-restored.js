@@ -49,16 +49,57 @@ const DB_PATH = '/data/tienda.db';
 console.log("=== INICIANDO CMS RESTAURADO ===");
 console.log("Conectando a base de datos persistente:", DB_PATH);
 
+// Asegurar que el directorio /data exista
+if (!fs.existsSync('/data')) {
+  console.log("Creando directorio /data...");
+  fs.mkdirSync('/data', { recursive: true });
+}
+
 const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) {
-    console.error("❌ Error crítico abriendo base de datos persistente:", err);
-    console.log("❌ No se puede continuar sin la base de datos persistente");
-    process.exit(1);
+    console.error("❌ Error abriendo base de datos persistente:", err);
+    console.log("❌ No se puede usar /data/tienda.db, usando memoria temporal");
+    // Fallback a memoria en lugar de terminar el proceso
+    const memoryDb = new sqlite3.Database(':memory:');
+    console.log("⚠️ Usando base de datos en memoria como fallback");
+    initializeDatabase(memoryDb);
   } else {
     console.log("✅ Base de datos persistente conectada:", DB_PATH);
     console.log("✅ CMS restaurado funcionando con datos reales");
+    initializeDatabase(db);
   }
 });
+
+function initializeDatabase(database) {
+  const dbToUse = database || db;
+  
+  // Verificar tablas existentes
+  dbToUse.all("SELECT name FROM sqlite_master WHERE type='table'", (err, tables) => {
+    if (err) {
+      console.error("Error obteniendo tablas:", err);
+      return;
+    }
+    
+    console.log("Tablas encontradas:", tables.map(t => t.name));
+    
+    // Verificar si existen usuarios
+    dbToUse.get("SELECT COUNT(*) as count FROM usuarios", (err, row) => {
+      if (err) {
+        console.error("Error verificando usuarios:", err);
+        return;
+      }
+      
+      console.log("Total usuarios encontrados:", row.count);
+      if (row.count > 0) {
+        dbToUse.all("SELECT usuario FROM usuarios", (err, users) => {
+          if (!err && users.length > 0) {
+            console.log("Usuarios existentes:", users.map(u => u.usuario).join(", "));
+          }
+        });
+      }
+    });
+  });
+}
 
 // Rutas de autenticación
 app.post("/api/login", (req, res) => {
