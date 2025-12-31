@@ -57,23 +57,32 @@ const upload = multer({
 // CONEXIÓN A BASE DE DATOS SQLITE
 // ================================
 
+// Variable global para la base de datos
+let db;
+
 // Usar base de datos en memoria para Railway (temporal solución)
 const dbPath = process.env.RAILWAY_ENVIRONMENT === 'production' 
   ? ':memory:'  // Base de datos en memoria para Railway
   : path.join(__dirname, "uploads", "tienda.db"); // Local development
 
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error("Error abriendo base de datos:", err);
-    console.log("Usando base de datos en memoria como fallback");
-    // Fallback a base de datos en memoria
-    const memoryDb = new sqlite3.Database(':memory:');
-    initializeDatabase(memoryDb);
-  } else {
-    console.log(`Base de datos SQLite en: ${dbPath}`);
+// Función para inicializar la base de datos
+function initializeDatabaseConnection() {
+  const database = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+      console.error("Error abriendo base de datos:", err);
+      console.log("Usando base de datos en memoria como fallback");
+      // Fallback a base de datos en memoria
+      db = new sqlite3.Database(':memory:');
+      console.log("Base de datos en memoria inicializada");
+    } else {
+      db = database;
+      console.log(`Base de datos SQLite en: ${dbPath}`);
+    }
+    
+    // Inicializar tablas y datos por defecto
     initializeDatabase(db);
-  }
-});
+  });
+}
 
 // Asegurar que el directorio exista para desarrollo local
 if (process.env.RAILWAY_ENVIRONMENT !== 'production') {
@@ -82,6 +91,9 @@ if (process.env.RAILWAY_ENVIRONMENT !== 'production') {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 }
+
+// Inicializar la conexión a la base de datos
+initializeDatabaseConnection();
 
 // ================================
 // RUTA PARA SUBIR IMÁGENES
@@ -1086,6 +1098,85 @@ function createDefaultData(database) {
       console.log("Banner por defecto creado");
     }
   });
+
+  // Crear productos de ejemplo - ELIMINADO POR SOLICITUD DEL USUARIO
+  // dbToUse.get("SELECT COUNT(*) as count FROM productos", (err, row) => {
+  //   if (!err && row.count === 0) {
+  //     const sampleProducts = [
+  //       {
+  //         nombre: "Laptop Gaming Pro",
+  //         precio: 1299.99,
+  //         stock: 5,
+  //         categoria: "Electrónica",
+  //         subcategoria: "Laptops",
+  //         en_oferta: 1,
+  //         precio_oferta: 999.99,
+  //         disponible: 1,
+  //         imagen: "/uploads/laptop1.jpg"
+  //       },
+  //       // ... más productos
+  //     ];
+
+  //     sampleProducts.forEach((product, index) => {
+  //       dbToUse.run(
+  //         `INSERT INTO productos (nombre, precio, stock, imagen, categoria, subcategoria, en_oferta, precio_oferta, disponible, creado_en) 
+  //          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+  //         [
+  //           product.nombre,
+  //           product.precio,
+  //           product.stock,
+  //           product.imagen,
+  //           product.categoria,
+  //           product.subcategoria,
+  //           product.en_oferta,
+  //           product.precio_oferta,
+  //           product.disponible
+  //         ],
+  //         (err) => {
+  //           if (err) {
+  //             console.error(`Error creando producto ${index + 1}:`, err);
+  //           } else {
+  //             console.log(`Producto de ejemplo creado: ${product.nombre}`);
+  //           }
+  //         }
+  //       );
+  //     });
+  //   }
+  // });
+
+  // Crear páginas de ejemplo - ELIMINADO POR SOLICITUD DEL USUARIO
+  // dbToUse.get("SELECT COUNT(*) as count FROM paginas", (err, row) => {
+  //   if (!err && row.count === 0) {
+  //     const samplePages = [
+  //       {
+  //         slug: "sobre-nosotros",
+  //         titulo: "Sobre Nosotros",
+  //         contenido: "<h2>Sobre nuestra tienda</h2><p>Somos una tienda especializada en productos electrónicos de alta calidad. Ofrecemos los mejores precios y un servicio excepcional.</p>",
+  //         visible: 1
+  //       },
+  //       {
+  //         slug: "contacto",
+  //         titulo: "Contacto",
+  //         contenido: "<h2>Información de Contacto</h2><p>Email: info@tienda.com</p><p>Teléfono: +34 900 123 456</p><p>Dirección: Calle Principal 123, 28001 Madrid</p>",
+  //         visible: 1
+  //       }
+  //     ];
+
+  //     samplePages.forEach((page, index) => {
+  //       dbToUse.run(
+  //         "INSERT INTO paginas (slug, titulo, contenido, visible, creado_en, actualizado_en) VALUES (?, ?, ?, ?, ?, ?)",
+  //         [page.slug, page.titulo, page.contenido, page.visible, "datetime('now')", "datetime('now')"],
+  //         (err) => {
+  //           if (err) {
+  //             console.error(`Error creando página ${index + 1}:`, err);
+  //           } else {
+  //             console.log(`Página de ejemplo creada: ${page.titulo}`);
+  //           }
+  //         }
+  //       );
+  //     });
+  //   }
+  // });
 }
 
 // Insertar configuración por defecto (solo si la tabla está vacía)
