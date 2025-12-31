@@ -1348,6 +1348,13 @@ app.post("/api/config", (req, res) => {
 });
 
 // ================================
+// SERVIR ARCHIVOS ESTÁTICOS
+// ================================
+
+// Servir archivos estáticos del frontend
+app.use(express.static(path.join(__dirname, "../tienda")));
+
+// ================================
 // RUTAS DE PÁGINAS ESTÁTICAS (para compatibilidad)
 // ================================
 
